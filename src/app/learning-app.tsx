@@ -1,4 +1,5 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, createHashRouter, RouterProvider } from 'react-router-dom'
+import { browserEdition } from '@/features/learning/edition'
 import { LearningProvider } from '@/features/learning/store'
 import {
   Shell,
@@ -11,7 +12,7 @@ import {
   Settings,
   NotFound,
 } from '@/features/learning/pages'
-const router = createBrowserRouter([
+const router = (browserEdition ? createHashRouter : createBrowserRouter)([
   {
     element: (
       <LearningProvider>

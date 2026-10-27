@@ -1,5 +1,7 @@
 node_modules
 dist
+dist-pages
+public/curriculum.json
 artifacts
 test-results
 playwright-report

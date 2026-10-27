@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  base: mode === 'pages' ? '/agent-path/' : '/',
+  build: { outDir: mode === 'pages' ? 'dist-pages' : 'dist' },
   plugins: [react(), tailwindcss()],
   server: {
     proxy: { '/api': 'http://127.0.0.1:8099' },
     watch: { ignored: ['**/playwright-report/**', '**/test-results/**', '**/artifacts/**'] },
   },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-})
+}))

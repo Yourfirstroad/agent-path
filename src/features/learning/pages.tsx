@@ -40,7 +40,9 @@ import {
   Upload,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { emptyLesson, useLearning } from './store'
+import { downloadLearningBackup, emptyLesson, useLearning } from './store'
+import { browserEdition } from './edition'
+import { browserStorageAvailable } from './browser-storage'
 import type { Lesson, Resource } from './types'
 import { ThemeSelect, ThemeSettings } from './theme'
 
@@ -51,6 +53,30 @@ const navigation = [
   { to: '/resources', label: '资源图书馆', icon: BookOpen },
   { to: '/notes', label: '学习笔记', icon: FileText },
 ]
+function BackupDownload({
+  children,
+  snapshot = false,
+}: {
+  children: ReactNode
+  snapshot?: boolean
+}) {
+  if (!browserEdition)
+    return (
+      <a className="button" href="/api/export" download>
+        {children}
+      </a>
+    )
+  return (
+    <button
+      className="button"
+      onClick={() => {
+        void downloadLearningBackup(snapshot).catch((error) => toast.error(error.message))
+      }}
+    >
+      {children}
+    </button>
+  )
+}
 function Tag({ children, muted = false }: { children: ReactNode; muted?: boolean }) {
   return <span className={`tag ${muted ? 'muted' : ''}`}>{children}</span>
 }
@@ -127,6 +153,7 @@ export function Shell() {
   const { data, error, reload } = useLearning()
   const [open, setOpen] = useState(false),
     [query, setQuery] = useState('')
+  const [storageAvailable] = useState(() => !browserEdition || browserStorageAvailable())
   const location = useLocation(),
     navigate = useNavigate()
   useEffect(() => {
@@ -155,7 +182,18 @@ export function Shell() {
         : '学习工作台')
   return (
     <div className="app-shell">
-      <a href="#main" className="skip-link">
+      <a
+        href="#main"
+        className="skip-link"
+        onClick={
+          browserEdition
+            ? (event) => {
+                event.preventDefault()
+                document.getElementById('main')?.focus()
+              }
+            : undefined
+        }
+      >
         跳到主要内容
       </a>
       {open && (
@@ -211,7 +249,8 @@ export function Shell() {
           <div className="profile">
             <span>我</span>
             <div>
-              我的学习空间<small>本机保存 · 单人使用</small>
+              我的学习空间
+              <small>{browserEdition ? '浏览器保存 · 个人记录' : '本机保存 · 单人使用'}</small>
             </div>
           </div>
         </div>
@@ -260,9 +299,17 @@ export function Shell() {
           </span>
         </header>
         <main id="main" tabIndex={-1}>
+          {browserEdition && !storageAvailable && (
+            <p className="setting-note" role="alert">
+              浏览器未允许保存数据。你可以阅读课程；请允许本站存储后刷新，才能保存进度和笔记。
+            </p>
+          )}
           {error ? (
             <>
-              <Empty title="暂时无法连接学习服务" body={`${error} 请确认 Python 服务正在运行。`} />
+              <Empty
+                title={browserEdition ? '暂时无法加载学习内容' : '暂时无法连接学习服务'}
+                body={browserEdition ? error : `${error} 请确认 Python 服务正在运行。`}
+              />
               <button className="button primary" onClick={reload}>
                 重新连接
               </button>
@@ -774,7 +821,10 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
                 className="button primary"
                 disabled={busy || !dirty}
                 onClick={async () => {
-                  if (await saveLesson(l.id, { note })) toast.success('笔记已保存到本机数据库')
+                  if (await saveLesson(l.id, { note }))
+                    toast.success(
+                      browserEdition ? '笔记已保存到当前浏览器' : '笔记已保存到本机数据库',
+                    )
                 }}
               >
                 {busy ? '保存中…' : '保存笔记'}
@@ -1080,12 +1130,16 @@ export function Notes() {
     <>
       <PageHead
         title="把理解，留给未来的自己。"
-        description="笔记和课程关联，保存在本机数据库。回到对应课程即可继续编辑。"
+        description={
+          browserEdition
+            ? '笔记保存在当前浏览器，仅自己可见。建议定期导出备份，回到对应课程即可继续编辑。'
+            : '笔记和课程关联，保存在本机数据库。回到对应课程即可继续编辑。'
+        }
       >
-        <a className="button" href="/api/export" download>
+        <BackupDownload>
           <Download size={16} />
           导出备份
-        </a>
+        </BackupDownload>
       </PageHead>
       <div className="search-field notes-search">
         <Search size={18} />
@@ -1175,10 +1229,16 @@ export function Settings() {
             包含课程验收、笔记、项目状态、收藏与学习时长。换电脑前先导出。
           </p>
           <div className="backup-actions">
-            <a className="button" href="/api/export" download>
+            <BackupDownload>
               <Download size={16} />
               导出全部记录
-            </a>
+            </BackupDownload>
+            {browserEdition && (
+              <BackupDownload snapshot>
+                <Download size={16} />
+                导出恢复前快照
+              </BackupDownload>
+            )}
             <button className="button" onClick={() => ref.current?.click()}>
               <Upload size={16} />
               选择备份文件
@@ -1214,7 +1274,11 @@ export function Settings() {
           {file && (
             <div className="restore-confirm">
               <h3>准备恢复：{file.name}</h3>
-              <p>恢复会替换当前学习记录。继续前会在本机保存一份恢复前快照。</p>
+              <p>
+                {browserEdition
+                  ? '恢复会替换当前浏览器的学习记录。继续前会保留一份恢复前快照，可用上方按钮导出。'
+                  : '恢复会替换当前学习记录。继续前会在本机保存一份恢复前快照。'}
+              </p>
               <div className="backup-actions">
                 <button
                   className="button primary"
@@ -1232,7 +1296,9 @@ export function Settings() {
             </div>
           )}
           <p className="caption">
-            数据保存在本工程 data/learning.sqlite3。此版本为本机单人使用，不包含账号和云同步。
+            {browserEdition
+              ? '记录仅保存在当前设备、当前浏览器，不会上传。清除网站数据或退出无痕模式可能丢失记录；换电脑前请导出备份，再在新设备恢复。没有账号或自动云同步。'
+              : '数据保存在本工程 data/learning.sqlite3。此版本为本机单人使用，不包含账号和云同步。'}
           </p>
         </section>
         <section className="panel update-policy">

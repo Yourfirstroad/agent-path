@@ -9,6 +9,10 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5189 --strictPort",
     "build": "tsc -b && vite build",
+    "build:pages": "node scripts/export-curriculum.mjs && tsc -b && vite build --mode pages",
+    "publish:pages": "node scripts/publish-pages.mjs",
+    "preview:pages": "vite preview --mode pages --host 127.0.0.1 --port 8111 --strictPort",
+    "test:pages": "playwright test --config playwright.pages.config.ts",
     "preview": "vite preview --host 127.0.0.1 --port 5189 --strictPort",
     "test:e2e": "playwright test",
     "typecheck": "tsc -b",

@@ -1,7 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import type { Bootstrap, LessonState, State } from './types'
+import { browserEdition } from './edition'
+import { browserRequest, learningStorageKey } from './browser-storage'
 async function request<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+  if (browserEdition) return browserRequest<T>(path, method, body)
   const r = await fetch(`/api${path}`, {
     method,
     headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
@@ -20,6 +23,17 @@ async function request<T>(path: string, method = 'GET', body?: unknown): Promise
     throw new Error(message)
   }
   return r.json()
+}
+
+export async function downloadLearningBackup(snapshot = false) {
+  const state = await request<State>(snapshot ? '/snapshot' : '/export')
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = snapshot ? 'before-import-backup.json' : 'agent-path-backup.json'
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 type Store = {
   data: Bootstrap | null
@@ -50,6 +64,14 @@ export function LearningProvider({ children }: { children: ReactNode }) {
       .catch((e) => setError(e.message))
   }, [])
   useEffect(reload, [reload])
+  useEffect(() => {
+    if (!browserEdition) return
+    const sync = (event: StorageEvent) => {
+      if (event.key === learningStorageKey || event.key === null) reload()
+    }
+    window.addEventListener('storage', sync)
+    return () => window.removeEventListener('storage', sync)
+  }, [reload])
   async function mutate<T>(
     path: string,
     method: string,
