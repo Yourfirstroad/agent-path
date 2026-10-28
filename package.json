@@ -13,6 +13,9 @@
     "publish:pages": "node scripts/publish-pages.mjs",
     "preview:pages": "vite preview --mode pages --host 127.0.0.1 --port 8111 --strictPort",
     "test:pages": "playwright test --config playwright.pages.config.ts",
+    "test:cloud-db": "node scripts/test-cloud-db.mjs",
+    "build:cloud-test": "node scripts/build-cloud-test.mjs",
+    "test:cloud": "playwright test --config playwright.cloud.config.ts",
     "preview": "vite preview --host 127.0.0.1 --port 5189 --strictPort",
     "test:e2e": "playwright test",
     "typecheck": "tsc -b",
@@ -22,6 +25,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.118.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.61.0",
@@ -36,6 +40,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@electric-sql/pglite": "0.5.12",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.5",

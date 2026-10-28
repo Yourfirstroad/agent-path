@@ -18,6 +18,7 @@ work/
 *.sqlite*
 *.db
 agent-path-backup*.json
+agent-path-reminder*.json
 before-import-*.json
 *.log
 *.pem

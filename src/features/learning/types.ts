@@ -56,6 +56,7 @@ export type State = {
   settings: { daily_minutes: 30 | 60 | 90 }
 }
 export type Bootstrap = {
+  identity?: string
   curriculum: {
     reviewed: string
     version: string

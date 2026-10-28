@@ -1,4 +1,12 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react'
 import {
   Link,
   NavLink,
@@ -43,8 +51,13 @@ import { toast } from 'sonner'
 import { downloadLearningBackup, emptyLesson, useLearning } from './store'
 import { browserEdition } from './edition'
 import { browserStorageAvailable } from './browser-storage'
+import { getCloudStatus, subscribeCloud } from './cloud-client'
 import type { Lesson, Resource } from './types'
 import { ThemeSelect, ThemeSettings } from './theme'
+
+const CloudSettings = lazy(() =>
+  import('./cloud-settings').then((module) => ({ default: module.CloudSettings })),
+)
 
 const navigation = [
   { to: '/', label: '学习工作台', icon: LayoutDashboard },
@@ -150,6 +163,7 @@ function Empty({
 }
 
 export function Shell() {
+  const cloud = useSyncExternalStore(subscribeCloud, getCloudStatus)
   const { data, error, reload } = useLearning()
   const [open, setOpen] = useState(false),
     [query, setQuery] = useState('')
@@ -160,6 +174,7 @@ export function Shell() {
     setOpen(false)
     window.scrollTo(0, 0)
     document.title = 'Agent Path · 从零构建你的 AI Agent'
+    if (browserEdition && cloud.owner) reload()
   }, [location.pathname])
   useEffect(() => {
     if (!open) return
@@ -250,7 +265,13 @@ export function Shell() {
             <span>我</span>
             <div>
               我的学习空间
-              <small>{browserEdition ? '浏览器保存 · 个人记录' : '本机保存 · 单人使用'}</small>
+              <small>
+                {browserEdition
+                  ? cloud.owner
+                    ? '云端进度 · 笔记本机'
+                    : '浏览器保存 · 个人记录'
+                  : '本机保存 · 单人使用'}
+              </small>
             </div>
           </div>
         </div>
@@ -673,7 +694,11 @@ export function LessonPage() {
   const { id } = useParams()
   const { data } = useLearning()
   const lesson = data?.curriculum.lessons.find((l) => l.id === id)
-  return lesson ? <LessonContent key={id} lesson={lesson} /> : <NotFound />
+  return lesson ? (
+    <LessonContent key={`${data?.identity || 'local'}:${id}`} lesson={lesson} />
+  ) : (
+    <NotFound />
+  )
 }
 function LessonContent({ lesson: l }: { lesson: Lesson }) {
   const { data, busy, saveLesson } = useLearning(),
@@ -1249,6 +1274,7 @@ export function Notes() {
 }
 
 export function Settings() {
+  const cloud = useSyncExternalStore(subscribeCloud, getCloudStatus)
   const { data, busy, settings, restore } = useLearning()
   const [file, setFile] = useState<{ name: string; value: unknown } | null>(null),
     [fileError, setFileError] = useState('')
@@ -1261,6 +1287,13 @@ export function Settings() {
         description="每天留一小段时间，允许课程跨天完成。进度跟随你实际完成的练习。"
       />
       <div className="settings-grid">
+        {browserEdition && (
+          <Suspense
+            fallback={<section className="panel cloud-settings">正在加载同步设置…</section>}
+          >
+            <CloudSettings />
+          </Suspense>
+        )}
         <ThemeSettings />
         <section className="panel">
           <h2>每日学习时长</h2>
@@ -1344,7 +1377,9 @@ export function Settings() {
               <h3>准备恢复：{file.name}</h3>
               <p>
                 {browserEdition
-                  ? '恢复会替换当前浏览器的学习记录。继续前会保留一份恢复前快照，可用上方按钮导出。'
+                  ? cloud.owner
+                    ? '恢复会替换当前账号的云端进度和这台设备的笔记、收藏；操作前保留恢复前快照。笔记与收藏不会上传。'
+                    : '恢复会替换当前浏览器的学习记录。继续前会保留一份恢复前快照，可用上方按钮导出。'
                   : '恢复会替换当前学习记录。继续前会在本机保存一份恢复前快照。'}
               </p>
               <div className="backup-actions">
@@ -1365,7 +1400,9 @@ export function Settings() {
           )}
           <p className="caption">
             {browserEdition
-              ? '记录仅保存在当前设备、当前浏览器，不会上传。清除网站数据或退出无痕模式可能丢失记录；换电脑前请导出备份，再在新设备恢复。没有账号或自动云同步。'
+              ? cloud.owner
+                ? '课程、项目与时长已启用账号同步；笔记与收藏只保存在当前设备，建议定期导出。没有将笔记上传到云端。'
+                : '未登录时，记录仅保存在当前设备、当前浏览器。清除网站数据或退出无痕模式可能丢失记录；请定期导出备份，也可登录账号同步课程进度。'
               : '数据保存在本工程 data/learning.sqlite3。此版本为本机单人使用，不包含账号和云同步。'}
           </p>
         </section>

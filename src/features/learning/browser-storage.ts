@@ -1,5 +1,14 @@
 import { z } from 'zod'
 import type { Bootstrap, LessonState, State } from './types'
+import {
+  extractProgress,
+  getCloudSession,
+  mergeProgress,
+  readCloudProgress,
+  updateCloudStatus,
+  writeCloudProgress,
+  type CloudRecord,
+} from './cloud-client'
 
 export const learningStorageKey = 'agent-path:learning:v1'
 const lessonSchema = z.strictObject({
@@ -18,7 +27,12 @@ const stateSchema = z.strictObject({
   }),
 })
 type Curriculum = Bootstrap['curriculum']
-type Envelope = { state: State; previous: State | null }
+type Envelope = {
+  state: State
+  previous: State | null
+  cloudRevision?: number
+  cloudUpdatedAt?: string | null
+}
 let curriculumPromise: Promise<Curriculum> | undefined
 
 export function emptyState(): State {
@@ -40,7 +54,7 @@ export function loadCurriculum() {
   return curriculumPromise
 }
 
-function validate(value: unknown, curriculum: Curriculum): State {
+export function validateLearningState(value: unknown, curriculum: Curriculum): State {
   const result = stateSchema.safeParse(value)
   if (!result.success)
     throw new Error('记录格式不正确，请检查课程验收、笔记及设置。原记录未被替换。')
@@ -63,10 +77,10 @@ function validate(value: unknown, curriculum: Curriculum): State {
   return state
 }
 
-function readEnvelope(curriculum: Curriculum): Envelope {
+function readEnvelope(curriculum: Curriculum, key = learningStorageKey): Envelope {
   let raw: string | null
   try {
-    raw = localStorage.getItem(learningStorageKey)
+    raw = localStorage.getItem(key)
   } catch {
     // Reading courses remains possible; writing always reports storage failures.
     return { state: emptyState(), previous: null }
@@ -75,18 +89,22 @@ function readEnvelope(curriculum: Curriculum): Envelope {
   try {
     const envelope = JSON.parse(raw)
     return {
-      state: validate(envelope.state, curriculum),
-      previous: envelope.previous === null ? null : validate(envelope.previous, curriculum),
+      state: validateLearningState(envelope.state, curriculum),
+      previous:
+        envelope.previous === null ? null : validateLearningState(envelope.previous, curriculum),
+      ...(Number.isSafeInteger(envelope.cloudRevision)
+        ? { cloudRevision: envelope.cloudRevision, cloudUpdatedAt: envelope.cloudUpdatedAt }
+        : {}),
     }
   } catch {
     throw new Error('本浏览器的学习记录无法读取，未清空或覆盖。请先保留浏览器数据并联系维护者。')
   }
 }
 
-function writeEnvelope(envelope: Envelope) {
+function writeEnvelope(envelope: Envelope, key = learningStorageKey) {
   try {
     // One atomic storage write keeps state and the before-import snapshot together.
-    localStorage.setItem(learningStorageKey, JSON.stringify(envelope))
+    localStorage.setItem(key, JSON.stringify(envelope))
   } catch {
     throw new Error(
       '浏览器无法保存记录，可能已禁用存储或空间不足。请允许本站存储后重试；本次未保存。',
@@ -107,9 +125,38 @@ export function browserStorageAvailable() {
 
 export async function browserRequest<T>(path: string, method: string, body?: unknown): Promise<T> {
   const curriculum = await loadCurriculum()
-  const envelope = readEnvelope(curriculum)
-  if (method === 'GET' && path === '/bootstrap') {
-    return { curriculum, state: envelope.state } as T
+  const session = await getCloudSession()
+  const key = session ? `${learningStorageKey}:user:${session.user.id}` : learningStorageKey
+  const envelope = readEnvelope(curriculum, key)
+  function applyCloud(value: CloudRecord, retainLatestLocalNotes = true) {
+    const latest = readEnvelope(curriculum, key)
+    if ((latest.cloudRevision ?? -1) > value.revision) {
+      Object.assign(envelope, latest)
+      return
+    }
+    envelope.state = validateLearningState(
+      mergeProgress(retainLatestLocalNotes ? latest.state : envelope.state, value.progress),
+      curriculum,
+    )
+    envelope.cloudRevision = value.revision
+    envelope.cloudUpdatedAt = value.updated_at
+  }
+  if (method === 'GET' && (path === '/bootstrap' || path === '/cached-bootstrap')) {
+    if (session && path === '/bootstrap') {
+      try {
+        applyCloud(await readCloudProgress(session))
+        writeEnvelope(envelope, key)
+      } catch (error) {
+        updateCloudStatus({
+          phase: 'offline',
+          message:
+            error instanceof Error
+              ? error.message
+              : '云端暂不可用；当前显示此设备缓存，进度修改需联网。',
+        })
+      }
+    }
+    return { curriculum, state: envelope.state, identity: session?.user.id || 'guest' } as T
   }
   if (method === 'GET' && (path === '/export' || path === '/snapshot')) {
     const state = path === '/snapshot' ? envelope.previous : envelope.state
@@ -121,9 +168,30 @@ export async function browserRequest<T>(path: string, method: string, body?: unk
   const id = parts[2]
   if (path === '/import' && method === 'POST') {
     // Validate before any write. Keep the old state as the recoverable snapshot.
-    const state = validate(body, curriculum)
-    writeEnvelope({ state, previous: envelope.state })
-    return state as T
+    const state = validateLearningState(body, curriculum)
+    const previous = envelope.state
+    if (session) {
+      const value = await writeCloudProgress(
+        envelope.cloudRevision ?? 0,
+        'replace',
+        '',
+        extractProgress(state),
+        session,
+      )
+      envelope.state = state
+      applyCloud(value, false)
+    } else envelope.state = state
+    envelope.previous = previous
+    try {
+      writeEnvelope(envelope, key)
+    } catch (error) {
+      if (session)
+        throw new Error(
+          '云端进度已恢复，但本机笔记无法保存。请保留原备份文件，允许浏览器存储后重试。',
+        )
+      throw error
+    }
+    return envelope.state as T
   } else if (parts[1] === 'lessons' && method === 'PATCH') {
     if (!curriculum.lessons.some((lesson) => lesson.id === id)) throw new Error('课程不存在')
     const current: LessonState = envelope.state.lessons[id] || {
@@ -148,8 +216,69 @@ export async function browserRequest<T>(path: string, method: string, body?: unk
   } else {
     throw new Error('不支持的学习记录操作')
   }
-  envelope.state = validate(envelope.state, curriculum)
+  envelope.state = validateLearningState(envelope.state, curriculum)
+  if (session) {
+    let cloudKind: string | null = null,
+      cloudPatch: unknown
+    if (parts[1] === 'lessons') {
+      const patch = body as Partial<LessonState>
+      if (patch.checks !== undefined || patch.answer !== undefined) {
+        cloudKind = 'lessons'
+        cloudPatch = {
+          ...(patch.checks !== undefined ? { checks: patch.checks } : {}),
+          ...(patch.answer !== undefined ? { answer: patch.answer } : {}),
+        }
+      }
+    } else if (parts[1] === 'projects' || path === '/settings') {
+      cloudKind = parts[1]
+      cloudPatch = body
+    }
+    if (cloudKind)
+      applyCloud(
+        await writeCloudProgress(
+          envelope.cloudRevision ?? 0,
+          cloudKind,
+          id || '',
+          cloudPatch,
+          session,
+        ),
+      )
+  }
   if (parts[1] === 'lessons') result = envelope.state.lessons[id]
-  writeEnvelope(envelope)
+  try {
+    writeEnvelope(envelope, key)
+  } catch (error) {
+    if (
+      session &&
+      (path === '/settings' ||
+        parts[1] === 'projects' ||
+        (parts[1] === 'lessons' && !('note' in (body as object))))
+    ) {
+      throw new Error('云端进度已保存，但本机缓存写入失败。请允许浏览器存储后刷新核对。')
+    }
+    throw error
+  }
   return result as T
+}
+
+export async function uploadGuestProgress() {
+  const curriculum = await loadCurriculum()
+  const session = await getCloudSession()
+  if (!session) throw new Error('请先登录学习账号')
+  const key = `${learningStorageKey}:user:${session.user.id}`
+  const envelope = readEnvelope(curriculum, key)
+  const guest = readEnvelope(curriculum)
+  const result = await writeCloudProgress(
+    envelope.cloudRevision ?? 0,
+    'replace',
+    '',
+    extractProgress(guest.state),
+    session,
+  )
+  envelope.previous = envelope.state
+  envelope.state = validateLearningState(mergeProgress(envelope.state, result.progress), curriculum)
+  envelope.cloudRevision = result.revision
+  envelope.cloudUpdatedAt = result.updated_at
+  writeEnvelope(envelope, key)
+  window.dispatchEvent(new Event('agent-path:cloud-refresh'))
 }

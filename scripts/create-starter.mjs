@@ -51,7 +51,9 @@ await cp(source, destination, {
       !rel.endsWith('.tsbuildinfo') &&
       !path.basename(rel).startsWith('.env') &&
       !/\.(?:sqlite[^.]*|db|pyc|log|pem|key)$/i.test(rel) &&
-      !/^(?:agent-path-backup|before-import-).*\.json$/i.test(path.basename(rel))
+      !/^(?:agent-path-backup|agent-path-reminder|before-import-).*\.json$/i.test(
+        path.basename(rel),
+      )
     )
   },
 })

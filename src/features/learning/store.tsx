@@ -1,8 +1,17 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { toast } from 'sonner'
 import type { Bootstrap, LessonState, State } from './types'
 import { browserEdition } from './edition'
 import { browserRequest, learningStorageKey } from './browser-storage'
+import { getCloudStatus } from './cloud-client'
 async function request<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
   if (browserEdition) return browserRequest<T>(path, method, body)
   const r = await fetch(`/api${path}`, {
@@ -54,23 +63,51 @@ export const emptyLesson: LessonState = {
   completed_at: null,
 }
 export function LearningProvider({ children }: { children: ReactNode }) {
+  const generation = useRef(0)
   const [data, setData] = useState<Bootstrap | null>(null),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false)
   const reload = useCallback(() => {
+    const current = ++generation.current
     setError('')
     request<Bootstrap>('/bootstrap')
-      .then(setData)
-      .catch((e) => setError(e.message))
+      .then((value) => {
+        if (current === generation.current) setData(value)
+      })
+      .catch((e) => {
+        if (current === generation.current) setError(e.message)
+      })
   }, [])
   useEffect(reload, [reload])
   useEffect(() => {
     if (!browserEdition) return
     const sync = (event: StorageEvent) => {
-      if (event.key === learningStorageKey || event.key === null) reload()
+      if (event.key?.startsWith(learningStorageKey) || event.key === null) reload()
     }
     window.addEventListener('storage', sync)
     return () => window.removeEventListener('storage', sync)
+  }, [reload])
+  useEffect(() => {
+    if (!browserEdition) return
+    const authChanged = () => {
+      setData(null)
+      reload()
+    }
+    const refresh = () => {
+      if (document.visibilityState === 'visible' && getCloudStatus().owner) reload()
+    }
+    window.addEventListener('agent-path:cloud-auth', authChanged)
+    window.addEventListener('agent-path:cloud-refresh', reload)
+    window.addEventListener('focus', refresh)
+    window.addEventListener('online', refresh)
+    const timer = window.setInterval(refresh, 30000)
+    return () => {
+      window.removeEventListener('agent-path:cloud-auth', authChanged)
+      window.removeEventListener('agent-path:cloud-refresh', reload)
+      window.removeEventListener('focus', refresh)
+      window.removeEventListener('online', refresh)
+      clearInterval(timer)
+    }
   }, [reload])
   async function mutate<T>(
     path: string,
@@ -82,7 +119,10 @@ export function LearningProvider({ children }: { children: ReactNode }) {
     setBusy(true)
     try {
       const value = await request<T>(path, method, body)
-      setData((old) => (old ? { ...old, state: apply(old.state, value) } : old))
+      if (browserEdition) {
+        const updated = await request<Bootstrap>('/cached-bootstrap')
+        if (updated.identity === data?.identity) setData(updated)
+      } else setData((old) => (old ? { ...old, state: apply(old.state, value) } : old))
       if (success) toast.success(success)
       return true
     } catch (e) {
