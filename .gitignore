@@ -2,6 +2,7 @@ node_modules/
 dist/
 dist-pages/
 /public/curriculum.json
+/public/downloads/
 test-results/
 playwright-report/
 artifacts/

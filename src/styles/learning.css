@@ -1445,6 +1445,10 @@ code {
   color: var(--ink-2);
   margin-bottom: 10px;
 }
+.lesson-section .section-heading h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
 textarea {
   display: block;
   width: 100%;

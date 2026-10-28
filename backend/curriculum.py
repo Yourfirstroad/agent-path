@@ -301,5 +301,8 @@ PROJECTS = [
     dict(id="p4", title="有审批的研究助手", subtitle="把 Agent 变成可交付的应用", stage="s8", stack="React · LangGraph · Docker", lesson="l38", checks=["运行步骤与证据可查看", "预算、审批与取消生效", "重启可恢复且无重复副作用", "五种场景演示与评测报告"]),
 ]
 
-CURRICULUM = dict(reviewed=REVIEWED, version="2026.10.27", stages=STAGES, lessons=LESSONS,
+from backend.framework_curriculum import extend
+extend(LESSONS, STAGES, RESOURCES, PROJECTS)
+
+CURRICULUM = dict(reviewed="2026-10-28", version="2026.10.28-frameworks", stages=STAGES, lessons=LESSONS,
                   resources=RESOURCES, projects=PROJECTS)

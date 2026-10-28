@@ -13,3 +13,4 @@
 - 常规验证：npm run build；Python unittest；npm run test:e2e。测试只用独立数据库。
 - 修改样式时验证 320、375、414、768、1440 布局，保留可见焦点与减弱动态支持。
 - 不主动使用子代理。第三方组件保留许可证与来源。
+- 框架课程由 backend/framework_curriculum.py 扩展；保留 l01–l40 稳定 ID，新单元使用 lc / lg 前缀。示例源在 examples/agent_labs，发布时只打包固定源码清单。实战依赖安装在单独环境，不加入网站后端 requirements。不能用教学模型测试代替真实模型效果验证。

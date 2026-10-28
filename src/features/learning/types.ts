@@ -11,6 +11,7 @@ export type Lesson = {
   checks: string[]
   code: string
   resources: string[]
+  lab?: { download: string; file: string; command: string; prerequisites: string }
   quiz: { question: string; options: string[]; answer: number; explanation: string }
 }
 export type Resource = {

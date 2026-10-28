@@ -46,7 +46,7 @@ test('无安装打开、子路径资源、全部课程直接访问和刷新', as
   expect(response.ok()).toBeTruthy()
   const curriculum = await response.json()
   expect(curriculum).not.toHaveProperty('state')
-  expect(curriculum.lessons).toHaveLength(40)
+  expect(curriculum.lessons).toHaveLength(48)
   for (const lesson of curriculum.lessons) {
     await page.goto(`./#/learn/${lesson.id}`)
     await expect(page.getByRole('heading', { name: lesson.title, exact: true })).toBeVisible()
@@ -232,4 +232,63 @@ test('三套主题与手机布局正常', async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
     true,
   )
+})
+
+test('框架课程有完整代码及实际 ZIP 下载入口', async ({ page }) => {
+  await page.goto('./#/learn/lc03')
+  await expect(page.getByRole('heading', { name: '先准备完整实战包', exact: true })).toBeVisible()
+  await page.locator('summary').filter({ hasText: '查看本课完整代码' }).click()
+  await expect(page.locator('details code')).toContainText(
+    'from langchain.agents import create_agent',
+  )
+  const pending = page.waitForEvent('download')
+  await page.getByRole('link', { name: '下载完整实战包', exact: true }).click()
+  const download = await pending
+  expect(download.suggestedFilename()).toBe('agent-labs.zip')
+  const stream = await download.createReadStream(),
+    chunks: Buffer[] = []
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk))
+  const archive = Buffer.concat(chunks)
+  expect(archive.subarray(0, 2).toString()).toBe('PK')
+  expect(archive.length).toBeGreaterThan(5000)
+  await page.screenshot({ path: 'artifacts/framework-desktop.png', fullPage: true })
+  for (const width of [320, 375, 414, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('./#/learn/lg04')
+    await expect(page.getByRole('link', { name: '下载完整实战包', exact: true })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    if (width === 375)
+      await page.screenshot({ path: 'artifacts/framework-mobile.png', fullPage: true })
+  }
+})
+
+test('旧版完成记录和笔记保留，新增框架课成为下一步', async ({ page, request }) => {
+  const curriculum = await (await request.get('curriculum.json')).json()
+  const lessons = Object.fromEntries(
+    curriculum.lessons
+      .filter((lesson: { id: string }) => /^l\d{2}$/.test(lesson.id))
+      .map((lesson: { id: string; quiz: { answer: number } }) => [
+        lesson.id,
+        {
+          checks: [true, true, true],
+          answer: lesson.quiz.answer,
+          note: lesson.id === 'l31' ? '旧版 LangGraph 学习笔记' : '',
+          completed_at: '2026-10-27T00:00:00Z',
+        },
+      ]),
+  )
+  await page.goto('./#/settings')
+  await importState(page, { ...blank, lessons, bookmarks: ['graph'] })
+  await expect(page.getByText('备份已恢复，原记录已留存快照')).toBeVisible()
+  await page.getByRole('link', { name: '学习工作台', exact: true }).click()
+  await expect(page.getByRole('link', { name: '继续学习', exact: true })).toHaveAttribute(
+    'href',
+    /#\/learn\/lc01$/,
+  )
+  await expect(page.getByText(/40\s*\/\s*48\s*节已完成/)).toBeVisible()
+  await expect(
+    page.getByRole('progressbar', { name: '当前阶段进度', exact: true }),
+  ).toHaveAttribute('max', '9')
+  await page.getByRole('link', { name: '学习笔记', exact: true }).click()
+  await expect(page.getByText('旧版 LangGraph 学习笔记', { exact: true })).toBeVisible()
 })

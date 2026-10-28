@@ -1,0 +1,4 @@
+# Python 3.12 recommended. These are framework dependencies, not website dependencies.
+langchain==1.4.7
+langgraph==1.2.18
+langgraph-checkpoint-sqlite==3.1.2

@@ -27,10 +27,15 @@ const dist = path.join(root, 'dist-pages')
 const index = await readFile(path.join(dist, 'index.html'), 'utf8')
 if (!index.includes('/agent-path/assets/')) throw new Error('请先运行 npm run build:pages。')
 for (const entry of await readdir(dist, { withFileTypes: true })) {
-  if (!['index.html', 'favicon.svg', 'curriculum.json', 'assets'].includes(entry.name)) {
+  if (
+    !['index.html', 'favicon.svg', 'curriculum.json', 'assets', 'downloads'].includes(entry.name)
+  ) {
     throw new Error(`发布目录含意外文件：${entry.name}`)
   }
 }
+const downloads = await readdir(path.join(dist, 'downloads'))
+if (downloads.length !== 1 || downloads[0] !== 'agent-labs.zip')
+  throw new Error('下载目录仅允许经过核对的实战 ZIP。')
 const curriculum = JSON.parse(await readFile(path.join(dist, 'curriculum.json'), 'utf8'))
 if ('state' in curriculum || !Array.isArray(curriculum.lessons))
   throw new Error('课程导出内容不正确。')

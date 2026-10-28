@@ -172,7 +172,7 @@ export function Shell() {
   const completed = data
       ? Object.values(data.state.lessons).filter((x) => x.completed_at).length
       : 0,
-    total = data?.curriculum.lessons.length || 40
+    total = data?.curriculum.lessons.length || 0
   const active =
     navigation.find((n) => n.to !== '/' && location.pathname.startsWith(n.to))?.label ||
     (location.pathname.startsWith('/learn')
@@ -351,7 +351,11 @@ export function Dashboard() {
   return (
     <>
       <PageHead
-        title={complete.length === 40 ? '整条路线，你已经走完了。' : '今天，向 AI 开发者再进一步。'}
+        title={
+          complete.length === c.lessons.length
+            ? '整条路线，你已经走完了。'
+            : '今天，向 AI 开发者再进一步。'
+        }
         description="从一段 Python 开始，逐步做出属于自己的 Agent。"
       >
         <div className="daily-badge">
@@ -367,9 +371,11 @@ export function Dashboard() {
             <div className="today-top">
               <span>
                 <span className="status-dot" />
-                {complete.length === 40 ? '复习推荐' : '今天从这里继续'}
+                {complete.length === c.lessons.length ? '复习推荐' : '今天从这里继续'}
               </span>
-              <Tag>第 {current.number} / 40 节</Tag>
+              <Tag>
+                第 {current.number} / {c.lessons.length} 节
+              </Tag>
             </div>
             <div className="today-body">
               <div>
@@ -380,7 +386,7 @@ export function Dashboard() {
                 <p className="today-description">{current.summary}</p>
                 <div className="course-meta">
                   <span>
-                    <Clock3 size={15} />约 150 分钟 / 可分多天
+                    <Clock3 size={15} />约 {current.minutes} 分钟 / 可分多天
                   </span>
                   <span>
                     <ListChecks size={15} />3 项实践验收
@@ -411,7 +417,7 @@ export function Dashboard() {
                 已完成课程
                 <strong>
                   {complete.length}
-                  <small> / 40</small>
+                  <small> / {c.lessons.length}</small>
                 </strong>
               </span>
             </div>
@@ -447,27 +453,34 @@ export function Dashboard() {
                     {stage.weeks} · {stage.focus}
                   </p>
                 </div>
-                <span className="muted-text">{done} / 5</span>
+                <span className="muted-text">
+                  {done} / {stageLessons.length}
+                </span>
               </div>
-              <Progress value={done} max={5} label="当前阶段进度" />
-              {stageLessons.slice(0, 3).map((l) => (
-                <Link key={l.id} to={`/learn/${l.id}`} className="lesson-row">
-                  <span
-                    className={`lesson-status ${s.lessons[l.id]?.completed_at ? 'done' : l.id === current.id ? 'current' : ''}`}
-                  >
-                    {s.lessons[l.id]?.completed_at ? (
-                      <Check size={14} />
-                    ) : (
-                      l.number.toString().padStart(2, '0')
-                    )}
-                  </span>
-                  <span>
-                    {l.title}
-                    <small>{l.track} · 约 150 分钟</small>
-                  </span>
-                  {l.id === current.id ? <Tag>继续这里</Tag> : <ChevronRight size={16} />}
-                </Link>
-              ))}
+              <Progress value={done} max={stageLessons.length} label="当前阶段进度" />
+              {stageLessons
+                .filter((l) => l.number >= current.number)
+                .slice(0, 3)
+                .map((l) => (
+                  <Link key={l.id} to={`/learn/${l.id}`} className="lesson-row">
+                    <span
+                      className={`lesson-status ${s.lessons[l.id]?.completed_at ? 'done' : l.id === current.id ? 'current' : ''}`}
+                    >
+                      {s.lessons[l.id]?.completed_at ? (
+                        <Check size={14} />
+                      ) : (
+                        l.number.toString().padStart(2, '0')
+                      )}
+                    </span>
+                    <span>
+                      {l.title}
+                      <small>
+                        {l.track} · 约 {l.minutes} 分钟
+                      </small>
+                    </span>
+                    {l.id === current.id ? <Tag>继续这里</Tag> : <ChevronRight size={16} />}
+                  </Link>
+                ))}
             </div>
           </section>
           <section className="method-note">
@@ -556,19 +569,23 @@ export function Roadmap() {
       />
       <div className="route-overview">
         <div>
-          <strong>8</strong>
+          <strong>{c.stages.length}</strong>
           <span>个学习阶段</span>
         </div>
         <div>
-          <strong>40</strong>
+          <strong>{c.lessons.length}</strong>
           <span>节实践课程</span>
         </div>
         <div>
-          <strong>4</strong>
+          <strong>{c.projects.length}</strong>
           <span>个实战作品</span>
         </div>
         <p>
-          约 {Math.ceil(6000 / (s.settings.daily_minutes * 5))} 周规划
+          约{' '}
+          {Math.ceil(
+            c.lessons.reduce((sum, l) => sum + l.minutes, 0) / (s.settings.daily_minutes * 5),
+          )}{' '}
+          周规划
           <br />
           <small>按每周 5 天推进、2 天复盘估算，不是完成承诺。</small>
         </p>
@@ -614,7 +631,9 @@ export function Roadmap() {
                     <h2>{stage.name}</h2>
                     <p>{stage.outcome}</p>
                   </div>
-                  <Tag muted>{done} / 5 完成</Tag>
+                  <Tag muted>
+                    {done} / {all.length} 完成
+                  </Tag>
                 </div>
                 <div className="stage-lessons">
                   {list.map((l) => (
@@ -694,10 +713,12 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
       <div className="lesson-page">
         <article className="lesson-article">
           <div className="lesson-detail-meta">
-            <span>第 {l.number} / 40 节</span>
+            <span>
+              第 {l.number} / {c.lessons.length} 节
+            </span>
             <span>{stage.short}</span>
             <span>
-              <Clock3 size={15} />约 150 分钟，可分多天
+              <Clock3 size={15} />约 {l.minutes} 分钟，可分多天
             </span>
           </div>
           <section className="lesson-section">
@@ -709,9 +730,43 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
               </div>
             ))}
           </section>
+          {l.lab && (
+            <section className="lesson-section" aria-labelledby="lab-setup-heading">
+              <h2 id="lab-setup-heading">先准备完整实战包</h2>
+              <p>{l.lab.prerequisites}</p>
+              <div className="backup-actions">
+                <a
+                  className="button primary"
+                  href={`${import.meta.env.BASE_URL}${l.lab.download}`}
+                  download
+                >
+                  <Download size={16} />
+                  下载完整实战包
+                </a>
+                <a
+                  className="button"
+                  href="https://github.com/Yourfirstroad/agent-path/tree/main/examples/agent_labs#readme"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ExternalLink size={16} />
+                  查看安装与运行说明
+                </a>
+              </div>
+              <p>完整解压后按 README 安装锁定依赖，在同一文件夹运行：</p>
+              <pre>
+                <code>{l.lab.command}</code>
+              </pre>
+              <p className="caption">
+                Windows 请用 .venv/Scripts/python.exe 替换 python；macOS / Linux 用
+                .venv/bin/python。默认不调用远端模型：Agent
+                示例使用明确标注的教学替身，框架、工具和检查点真实执行。真实模型接入可能收费，需另行配置与验收。
+              </p>
+            </section>
+          )}
           <section className="lesson-section">
             <div className="section-heading">
-              <h2>代码起点</h2>
+              <h2>{l.lab ? `本课文件：${l.lab.file}` : '代码起点'}</h2>
               <button
                 className="text-action"
                 onClick={async () => {
@@ -727,11 +782,24 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
                 复制代码
               </button>
             </div>
-            <pre>
-              <code>{l.code}</code>
-            </pre>
+            {l.lab ? (
+              <details>
+                <summary className="text-action">
+                  查看本课完整代码 <ChevronDown size={16} />
+                </summary>
+                <pre>
+                  <code>{l.code}</code>
+                </pre>
+              </details>
+            ) : (
+              <pre>
+                <code>{l.code}</code>
+              </pre>
+            )}
             <p className="caption">
-              在自己的开发环境中练习。标注“示意 / 草案 / mock”的代码用于理解，需按步骤补全。
+              {l.lab
+                ? '当前文件代码完整，须与包内 lab_support.py 等文件一起使用。运行结果和验收需要你亲自确认。'
+                : '在自己的开发环境中练习。标注“示意 / 草案 / mock”的代码用于理解，需按步骤补全。'}
             </p>
           </section>
           <section className="lesson-section">

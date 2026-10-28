@@ -63,7 +63,7 @@ test('资料搜索、空结果、收藏与持久化', async ({ page }) => {
   await page.getByLabel('搜索资料库').fill('no-such-resource-123')
   await expect(page.getByRole('heading', { name: '没有匹配的资料' })).toBeVisible()
   await page.getByRole('button', { name: '清除筛选' }).click()
-  await expect(page.locator('.resource-card')).toHaveCount(22)
+  await expect(page.locator('.resource-card')).toHaveCount(30)
   await page.getByRole('button', { name: '只看收藏' }).click()
   await expect(page.locator('.resource-card')).toHaveCount(1)
 })
@@ -187,7 +187,7 @@ for (const width of [320, 375, 414, 768, 1440])
 
 test('课程和资料引用完整且所有课程路由可读', async ({ page, request }) => {
   const { curriculum: c } = await (await request.get('/api/bootstrap')).json()
-  expect(c.lessons).toHaveLength(40)
+  expect(c.lessons).toHaveLength(48)
   expect(c.stages).toHaveLength(8)
   for (const l of c.lessons) {
     expect(l.checks).toHaveLength(3)
