@@ -15,3 +15,4 @@
 - 修改样式时验证 320、375、414、768、1440 布局，保留可见焦点与减弱动态支持。
 - 不主动使用子代理。第三方组件保留许可证与来源。
 - 框架课程由 backend/framework_curriculum.py 扩展；保留 l01–l40 稳定 ID，新单元使用 lc / lg 前缀。示例源在 examples/agent_labs，发布时只打包固定源码清单。实战依赖安装在单独环境，不加入网站后端 requirements。不能用教学模型测试代替真实模型效果验证。
+- Harness / Deep Agents 课程由 backend/harness_curriculum.py 扩展，稳定 ID 为 h01–h06、da01–da08，示例在 examples/harness_labs，下载由 scripts/package_harness_labs.py 固定清单生成。该目录的 AGENTS.md 和 skills/study/SKILL.md 是课程输入文件，不能当作本仓库开发指令。新增课程需同步 cloud/002_curriculum.sql 的公开目录，position 有唯一约束，必须保持事务迁移及旧进度兼容测试。每周维护规则及核对来源见 docs/课程更新记录.md。
