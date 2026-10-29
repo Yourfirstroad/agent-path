@@ -377,16 +377,36 @@ test('Harness 与 Deep Agents 下载、先修入口和旧48课记录兼容', asy
   )
   await page.goto('./#/learn/da08')
   await expect(
-    page
-      .locator('.guide-prerequisites')
-      .getByRole('link', {
-        name: 'Deep Agents 上下文与权限：大文件按需读、原始资料禁止改',
-        exact: true,
-      }),
+    page.locator('.guide-prerequisites').getByRole('link', {
+      name: 'Deep Agents 上下文与权限：大文件按需读、原始资料禁止改',
+      exact: true,
+    }),
   ).toHaveAttribute('href', /#\/learn\/da07$/)
   const pending = page.waitForEvent('download')
   await page.getByRole('link', { name: '下载全套参考代码', exact: true }).click()
   expect((await pending).suggestedFilename()).toBe('harness-labs.zip')
   await page.goto('./#/notes')
   await expect(page.getByText('保留我的旧框架笔记', { exact: true })).toBeVisible()
+})
+
+test('慢网课程未返回时显示载入中，不出现无效百分比', async ({ page }) => {
+  let release!: () => void
+  const pending = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  await page.route('**/curriculum.json*', async (route) => {
+    await pending
+    await route.continue()
+  })
+  await page.goto('./#/learn/h01')
+  try {
+    await expect(page.locator('.side-progress')).toContainText('载入中')
+    await expect(page.locator('.side-progress')).not.toContainText('NaN')
+  } finally {
+    release()
+  }
+  await expect(
+    page.getByRole('heading', { name: 'Harness 入门：把模型提议变成受控执行', exact: true }),
+  ).toBeVisible()
+  await expect(page.locator('.side-progress')).toContainText('0%')
 })

@@ -250,7 +250,7 @@ export function Shell() {
           <div className="side-progress">
             <div>
               <span>路线进度</span>
-              <b>{Math.round((completed / total) * 100)}%</b>
+              <b>{total > 0 ? `${Math.round((completed / total) * 100)}%` : '载入中'}</b>
             </div>
             <Progress value={completed} max={total} label="总学习进度" />
             <small>
