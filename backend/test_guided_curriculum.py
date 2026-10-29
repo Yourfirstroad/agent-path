@@ -7,8 +7,8 @@ from scripts.package_guided_lessons import manifest, package_guides
 
 ROOT=Path(__file__).resolve().parent.parent
 class GuidedCurriculumTests(unittest.TestCase):
-    def test_all_48_lessons_have_specific_complete_guides(self):
-        lessons=CURRICULUM['lessons']; self.assertEqual(len(lessons),48)
+    def test_all_62_lessons_have_specific_complete_guides(self):
+        lessons=CURRICULUM['lessons']; self.assertEqual(len(lessons),62)
         ids={l['id']:l['number'] for l in lessons}
         for lesson in lessons:
             with self.subTest(lesson=lesson['id']):

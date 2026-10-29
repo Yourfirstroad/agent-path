@@ -8,10 +8,10 @@ class FrameworkCurriculumTests(unittest.TestCase):
     def test_stable_ids_order_counts_and_resources(self):
         lessons = CURRICULUM['lessons']
         ids = [lesson['id'] for lesson in lessons]
-        self.assertEqual(len(ids), 48)
-        self.assertEqual(len(set(ids)), 48)
+        self.assertEqual(len(ids), 62)
+        self.assertEqual(len(set(ids)), 62)
         self.assertTrue({f'l{number:02}' for number in range(1,41)} <= set(ids))
-        self.assertEqual([lesson['number'] for lesson in lessons], list(range(1,49)))
+        self.assertEqual([lesson['number'] for lesson in lessons], list(range(1,63)))
         self.assertEqual(ids[ids.index('l25')+1:ids.index('l26')], ['lc01','lc02','lc03','lc04'])
         self.assertEqual(ids[ids.index('l31')+1:ids.index('l32')], ['lg01','lg02','lg03','lg04'])
         resources = {item['id'] for item in CURRICULUM['resources']}

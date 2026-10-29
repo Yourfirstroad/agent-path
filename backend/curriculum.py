@@ -305,6 +305,8 @@ from backend.framework_curriculum import extend
 extend(LESSONS, STAGES, RESOURCES, PROJECTS)
 from backend.guided_curriculum import extend_guides
 extend_guides(LESSONS)
+from backend.harness_curriculum import extend_harness
+extend_harness(LESSONS, STAGES, RESOURCES)
 
-CURRICULUM = dict(reviewed="2026-10-29", version="2026.10.29-guided", stages=STAGES, lessons=LESSONS,
+CURRICULUM = dict(reviewed="2026-10-29", version="2026.10.29-harness", stages=STAGES, lessons=LESSONS,
                   resources=RESOURCES, projects=PROJECTS)

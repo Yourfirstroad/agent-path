@@ -46,7 +46,7 @@ test('无安装打开、子路径资源、全部课程直接访问和刷新', as
   expect(response.ok()).toBeTruthy()
   const curriculum = await response.json()
   expect(curriculum).not.toHaveProperty('state')
-  expect(curriculum.lessons).toHaveLength(48)
+  expect(curriculum.lessons).toHaveLength(62)
   for (const lesson of curriculum.lessons) {
     await page.goto(`./#/learn/${lesson.id}`)
     await expect(page.getByRole('heading', { name: lesson.title, exact: true })).toBeVisible()
@@ -285,7 +285,7 @@ test('旧版完成记录和笔记保留，新增框架课成为下一步', async
     'href',
     /#\/learn\/lc01$/,
   )
-  await expect(page.getByText(/40\s*\/\s*48\s*节已完成/)).toBeVisible()
+  await expect(page.getByText(/40\s*\/\s*62\s*节已完成/)).toBeVisible()
   await expect(
     page.getByRole('progressbar', { name: '当前阶段进度', exact: true }),
   ).toHaveAttribute('max', '9')
@@ -293,7 +293,7 @@ test('旧版完成记录和笔记保留，新增框架课成为下一步', async
   await expect(page.getByText('旧版 LangGraph 学习笔记', { exact: true })).toBeVisible()
 })
 
-test('48 课都有跟做步骤，运行命令和参考答案不会改变进度', async ({ page, request, context }) => {
+test('62 课都有跟做步骤，运行命令和参考答案不会改变进度', async ({ page, request, context }) => {
   const curriculum = await (await request.get('curriculum.json')).json()
   for (const lesson of curriculum.lessons) {
     expect(lesson.guide.files.length).toBeGreaterThan(0)
@@ -331,7 +331,7 @@ async function exportStateFromStorage(page: Page) {
 }
 
 test('新教程三套主题无障碍与五种宽度可读', async ({ page }) => {
-  await page.goto('./#/learn/l18')
+  await page.goto('./#/learn/da08')
   for (const theme of ['forest', 'slate', 'paper']) {
     await page.getByLabel('配色', { exact: true }).selectOption(theme)
     const audit = await new AxeBuilder({ page })
@@ -345,6 +345,48 @@ test('新教程三套主题无障碍与五种宽度可读', async ({ page }) => 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await expect(page.getByRole('link', { name: '下载全套参考代码', exact: true })).toBeVisible()
     if (width === 375 || width === 1440)
-      await page.screenshot({ path: `artifacts/guided-l18-${width}.png`, fullPage: true })
+      await page.screenshot({ path: `artifacts/guided-da08-${width}.png`, fullPage: true })
   }
+})
+
+test('Harness 与 Deep Agents 下载、先修入口和旧48课记录兼容', async ({ page, request }) => {
+  const curriculum = await (await request.get('curriculum.json')).json()
+  const old = {
+    ...blank,
+    lessons: Object.fromEntries(
+      curriculum.lessons
+        .filter((l: { id: string }) => !/^(h|da)\d/.test(l.id))
+        .map((l: { id: string; quiz: { answer: number } }) => [
+          l.id,
+          {
+            checks: [true, true, true],
+            answer: l.quiz.answer,
+            note: l.id === 'lg04' ? '保留我的旧框架笔记' : '',
+            completed_at: '2026-10-28T00:00:00Z',
+          },
+        ]),
+    ),
+  }
+  await page.goto('./#/settings')
+  await importState(page, old)
+  await expect(page.getByText('备份已恢复，原记录已留存快照')).toBeVisible()
+  await page.getByRole('link', { name: '学习工作台', exact: true }).click()
+  await expect(page.getByRole('link', { name: '继续学习', exact: true })).toHaveAttribute(
+    'href',
+    /#\/learn\/h01$/,
+  )
+  await page.goto('./#/learn/da08')
+  await expect(
+    page
+      .locator('.guide-prerequisites')
+      .getByRole('link', {
+        name: 'Deep Agents 上下文与权限：大文件按需读、原始资料禁止改',
+        exact: true,
+      }),
+  ).toHaveAttribute('href', /#\/learn\/da07$/)
+  const pending = page.waitForEvent('download')
+  await page.getByRole('link', { name: '下载全套参考代码', exact: true }).click()
+  expect((await pending).suggestedFilename()).toBe('harness-labs.zip')
+  await page.goto('./#/notes')
+  await expect(page.getByText('保留我的旧框架笔记', { exact: true })).toBeVisible()
 })

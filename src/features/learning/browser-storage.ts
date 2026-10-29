@@ -41,7 +41,7 @@ export function emptyState(): State {
 
 export function loadCurriculum() {
   if (!curriculumPromise) {
-    curriculumPromise = fetch(`${import.meta.env.BASE_URL}curriculum.json?v=2026.10.29-guided`)
+    curriculumPromise = fetch(`${import.meta.env.BASE_URL}curriculum.json?v=2026.10.29-harness`)
       .then(async (response) => {
         if (!response.ok) throw new Error('课程暂时无法加载，请检查网络后重试。')
         return (await response.json()) as Curriculum

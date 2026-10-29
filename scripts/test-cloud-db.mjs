@@ -87,6 +87,31 @@ try {
     [alice],
   )
   assert.deepEqual(original.rows[0].previous_progress, beforeReplace.progress)
+  // Reorder an existing 48-course catalogue, with real progress present.
+  const beforeCatalogue = (await db.query('select * from public.ap_progress order by owner_id'))
+    .rows
+  await db.exec(
+    "delete from public.ap_lessons where id like 'h%' or id like 'da%'; update public.ap_lessons set position=position-14 where position>=58;",
+  )
+  const catalogueSql = await readFile(
+    new URL('../cloud/002_curriculum.sql', import.meta.url),
+    'utf8',
+  )
+  await db.exec(catalogueSql)
+  await db.exec(catalogueSql) // Re-running an already-applied update is safe.
+  assert.deepEqual(
+    (await db.query('select * from public.ap_progress order by owner_id')).rows,
+    beforeCatalogue,
+  )
+  await asUser(bob)
+  const newCourse = await rpc('ap_save_progress', [
+    1,
+    'lessons',
+    'da08',
+    { checks: [true, true, true], answer: 1 },
+  ])
+  assert.ok(newCourse.progress.lessons.da08.completed_at)
+  await db.exec('reset role')
   const curriculum = JSON.parse(
     await readFile(new URL('../public/curriculum.json', import.meta.url), 'utf8'),
   )
