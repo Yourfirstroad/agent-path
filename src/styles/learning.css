@@ -1486,6 +1486,9 @@ textarea {
   gap: 12px;
   margin-top: 20px;
 }
+.lesson-pagination .button:not(.primary) {
+  color: var(--ink-1);
+}
 .lesson-rail .panel h3 {
   margin: 14px 0 8px;
 }
@@ -2358,5 +2361,201 @@ textarea {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+.guided-lesson {
+  min-width: 0;
+}
+/* finesse: existing product register, guided lesson hierarchy, 2026-10-29 */
+.guide-intro {
+  margin-top: 24px;
+  padding: 24px;
+  background: var(--panel-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--r) var(--r) 0;
+}
+.guide-intro h2 {
+  margin: 10px 0 14px;
+}
+.guide-intro p,
+.guide-section p {
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.guide-prerequisites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 16px;
+  font-size: 12px;
+}
+.guide-prerequisites a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+}
+.guide-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  padding: 18px 0;
+}
+.guide-nav a {
+  color: var(--ink-1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--panel-2);
+}
+.guide-nav a:hover {
+  color: var(--accent);
+}
+.guide-section {
+  scroll-margin-top: 24px;
+}
+.guide-section:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 8px;
+}
+.guide-section > p {
+  margin-bottom: 16px;
+}
+.guide-files {
+  display: grid;
+  gap: 10px;
+}
+.guide-files details {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+.guide-files summary {
+  padding: 14px 16px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+.guide-files summary span {
+  display: inline-block;
+  padding-left: 12px;
+  color: var(--ink-3);
+  font-size: 11px;
+  font-family: inherit;
+}
+.guide-code {
+  min-width: 0;
+}
+.guide-code-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.guide-code-label span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.guide-code-label button {
+  flex-shrink: 0;
+  min-height: 32px;
+}
+.guide-code pre {
+  margin: 8px 0 0;
+  max-width: 100%;
+  max-height: 460px;
+  overflow: auto;
+  border-radius: 6px;
+}
+.guide-section select {
+  max-width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  background: var(--panel-2);
+  color: var(--ink-1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.guide-result {
+  margin-top: 22px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  border-radius: 8px;
+}
+.guide-result h3 {
+  color: var(--accent);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.guide-result p,
+.guide-solution p {
+  white-space: pre-wrap;
+  margin: 0;
+}
+.guide-errors,
+.guide-solution {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding: 16px 0;
+}
+.guide-errors summary,
+.guide-solution summary {
+  cursor: pointer;
+  color: var(--accent);
+  padding: 6px 0;
+}
+.guide-errors ul {
+  padding: 12px 0 0 20px;
+}
+.guide-errors li {
+  padding: 6px 0;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.guide-solution p {
+  padding-top: 16px;
+}
+.guide-explanation {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.guide-explanation > span {
+  color: var(--accent);
+  font-size: 12px;
+  padding-top: 4px;
+}
+.guide-explanation h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+.guide-boundary {
+  color: var(--ink-3);
+  border-left: 2px solid var(--border);
+  padding: 0 16px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+@media (max-width: 480px) {
+  .guide-intro {
+    padding: 16px;
+  }
+  .guide-nav a {
+    padding: 8px;
+  }
+  .guide-code-label {
+    padding-inline: 10px;
+  }
+  .guide-result {
+    padding: 14px;
   }
 }

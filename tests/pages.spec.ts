@@ -236,11 +236,11 @@ test('三套主题与手机布局正常', async ({ page }) => {
 
 test('框架课程有完整代码及实际 ZIP 下载入口', async ({ page }) => {
   await page.goto('./#/learn/lc03')
-  await expect(page.getByRole('heading', { name: '先准备完整实战包', exact: true })).toBeVisible()
-  await page.locator('summary').filter({ hasText: '查看本课完整代码' }).click()
-  await expect(page.locator('details code')).toContainText(
-    'from langchain.agents import create_agent',
-  )
+  await expect(page.getByRole('heading', { name: '1. 准备文件与环境', exact: true })).toBeVisible()
+  await page.locator('summary').filter({ hasText: '03_agent_memory.py' }).click()
+  await expect(
+    page.getByRole('code').filter({ hasText: 'from langchain.agents import create_agent' }),
+  ).toContainText('from langchain.agents import create_agent')
   const pending = page.waitForEvent('download')
   await page.getByRole('link', { name: '下载完整实战包', exact: true }).click()
   const download = await pending
@@ -291,4 +291,60 @@ test('旧版完成记录和笔记保留，新增框架课成为下一步', async
   ).toHaveAttribute('max', '9')
   await page.getByRole('link', { name: '学习笔记', exact: true }).click()
   await expect(page.getByText('旧版 LangGraph 学习笔记', { exact: true })).toBeVisible()
+})
+
+test('48 课都有跟做步骤，运行命令和参考答案不会改变进度', async ({ page, request, context }) => {
+  const curriculum = await (await request.get('curriculum.json')).json()
+  for (const lesson of curriculum.lessons) {
+    expect(lesson.guide.files.length).toBeGreaterThan(0)
+    expect(lesson.guide.explain.length).toBeGreaterThanOrEqual(3)
+    await page.goto(`./#/learn/${lesson.id}`)
+    await expect(
+      page.getByRole('heading', { name: '这节课，你会做出什么', exact: true }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: '3. 运行，再对照结果', exact: true }),
+    ).toBeVisible()
+  }
+  await page.goto('./#/learn/l18')
+  const before = await exportStateFromStorage(page)
+  await page.getByRole('link', { name: '3 运行', exact: true }).click()
+  expect(page.url()).toContain('#/learn/l18')
+  await page.getByLabel('你的电脑系统').selectOption('unix')
+  await expect(page.getByRole('code').filter({ hasText: 'python3 -m venv' })).toContainText(
+    '.venv/bin/python',
+  )
+  await page.locator('summary').filter({ hasText: '卡住时，展开参考答案' }).click()
+  await expect(page.getByText(/不要自行补上今天或明天/)).toBeVisible()
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await page.getByRole('button', { name: '复制main.py', exact: true }).click()
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('def extract(text)')
+  const pending = page.waitForEvent('download')
+  await page.getByRole('link', { name: '下载全套参考代码', exact: true }).click()
+  const download = await pending
+  expect(download.suggestedFilename()).toBe('guided-lessons.zip')
+  expect(await exportStateFromStorage(page)).toEqual(before)
+})
+
+async function exportStateFromStorage(page: Page) {
+  return page.evaluate((key) => localStorage.getItem(key), key)
+}
+
+test('新教程三套主题无障碍与五种宽度可读', async ({ page }) => {
+  await page.goto('./#/learn/l18')
+  for (const theme of ['forest', 'slate', 'paper']) {
+    await page.getByLabel('配色', { exact: true }).selectOption(theme)
+    const audit = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
+      .analyze()
+    expect(audit.violations).toEqual([])
+  }
+  await page.getByLabel('配色', { exact: true }).selectOption('forest')
+  for (const width of [320, 375, 414, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await expect(page.getByRole('link', { name: '下载全套参考代码', exact: true })).toBeVisible()
+    if (width === 375 || width === 1440)
+      await page.screenshot({ path: `artifacts/guided-l18-${width}.png`, fullPage: true })
+  }
 })

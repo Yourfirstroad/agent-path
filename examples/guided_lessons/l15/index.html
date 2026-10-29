@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>从 Python 读取任务</title>
+  <body>
+    <h1>从 Python 读取任务</h1>
+    <button id="load">读取任务</button>
+    <p id="status">尚未读取</p>
+    <pre id="output"></pre>
+    <script>
+      const status = document.querySelector('#status')
+      const output = document.querySelector('#output')
+      document.querySelector('#load').onclick = async () => {
+        status.textContent = '加载中'
+        output.textContent = ''
+        try {
+          const response = await fetch('/api/tasks')
+          if (!response.ok) throw new Error(`HTTP ${response.status}`)
+          const tasks = await response.json()
+          status.textContent = tasks.length ? '读取成功' : '暂时没有任务'
+          output.textContent = JSON.stringify(tasks, null, 2)
+        } catch (error) {
+          status.textContent = `读取失败，请检查服务是否启动：${error.message}`
+        }
+      }
+    </script>
+  </body>
+</html>

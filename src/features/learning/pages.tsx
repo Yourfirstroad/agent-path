@@ -54,6 +54,7 @@ import { browserStorageAvailable } from './browser-storage'
 import { getCloudStatus, subscribeCloud } from './cloud-client'
 import type { Lesson, Resource } from './types'
 import { ThemeSelect, ThemeSettings } from './theme'
+import { GuidedLesson } from './guided-lesson'
 
 const CloudSettings = lazy(() =>
   import('./cloud-settings').then((module) => ({ default: module.CloudSettings })),
@@ -746,95 +747,101 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
               <Clock3 size={15} />约 {l.minutes} 分钟，可分多天
             </span>
           </div>
-          <section className="lesson-section">
-            <h2>先理解这几个概念</h2>
-            {l.concepts.map((p, i) => (
-              <div className="concept" key={p}>
-                <span>{i + 1}</span>
-                <p>{p}</p>
-              </div>
-            ))}
-          </section>
-          {l.lab && (
-            <section className="lesson-section" aria-labelledby="lab-setup-heading">
-              <h2 id="lab-setup-heading">先准备完整实战包</h2>
-              <p>{l.lab.prerequisites}</p>
-              <div className="backup-actions">
-                <a
-                  className="button primary"
-                  href={`${import.meta.env.BASE_URL}${l.lab.download}`}
-                  download
-                >
-                  <Download size={16} />
-                  下载完整实战包
-                </a>
-                <a
-                  className="button"
-                  href="https://github.com/Yourfirstroad/agent-path/tree/main/examples/agent_labs#readme"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ExternalLink size={16} />
-                  查看安装与运行说明
-                </a>
-              </div>
-              <p>完整解压后按 README 安装锁定依赖，在同一文件夹运行：</p>
-              <pre>
-                <code>{l.lab.command}</code>
-              </pre>
-              <p className="caption">
-                Windows 请用 .venv/Scripts/python.exe 替换 python；macOS / Linux 用
-                .venv/bin/python。默认不调用远端模型：Agent
-                示例使用明确标注的教学替身，框架、工具和检查点真实执行。真实模型接入可能收费，需另行配置与验收。
-              </p>
-            </section>
+          {l.guide ? (
+            <GuidedLesson lesson={l} lessons={c.lessons} />
+          ) : (
+            <>
+              <section className="lesson-section">
+                <h2>先理解这几个概念</h2>
+                {l.concepts.map((p, i) => (
+                  <div className="concept" key={p}>
+                    <span>{i + 1}</span>
+                    <p>{p}</p>
+                  </div>
+                ))}
+              </section>
+              {l.lab && (
+                <section className="lesson-section" aria-labelledby="lab-setup-heading">
+                  <h2 id="lab-setup-heading">先准备完整实战包</h2>
+                  <p>{l.lab.prerequisites}</p>
+                  <div className="backup-actions">
+                    <a
+                      className="button primary"
+                      href={`${import.meta.env.BASE_URL}${l.lab.download}`}
+                      download
+                    >
+                      <Download size={16} />
+                      下载完整实战包
+                    </a>
+                    <a
+                      className="button"
+                      href="https://github.com/Yourfirstroad/agent-path/tree/main/examples/agent_labs#readme"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink size={16} />
+                      查看安装与运行说明
+                    </a>
+                  </div>
+                  <p>完整解压后按 README 安装锁定依赖，在同一文件夹运行：</p>
+                  <pre>
+                    <code>{l.lab.command}</code>
+                  </pre>
+                  <p className="caption">
+                    Windows 请用 .venv/Scripts/python.exe 替换 python；macOS / Linux 用
+                    .venv/bin/python。默认不调用远端模型：Agent
+                    示例使用明确标注的教学替身，框架、工具和检查点真实执行。真实模型接入可能收费，需另行配置与验收。
+                  </p>
+                </section>
+              )}
+              <section className="lesson-section">
+                <div className="section-heading">
+                  <h2>{l.lab ? `本课文件：${l.lab.file}` : '代码起点'}</h2>
+                  <button
+                    className="text-action"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(l.code)
+                        toast.success('代码已复制')
+                      } catch {
+                        toast.error('复制失败，请手动选择代码复制')
+                      }
+                    }}
+                  >
+                    <Copy size={15} />
+                    复制代码
+                  </button>
+                </div>
+                {l.lab ? (
+                  <details>
+                    <summary className="text-action">
+                      查看本课完整代码 <ChevronDown size={16} />
+                    </summary>
+                    <pre>
+                      <code>{l.code}</code>
+                    </pre>
+                  </details>
+                ) : (
+                  <pre>
+                    <code>{l.code}</code>
+                  </pre>
+                )}
+                <p className="caption">
+                  {l.lab
+                    ? '当前文件代码完整，须与包内 lab_support.py 等文件一起使用。运行结果和验收需要你亲自确认。'
+                    : '在自己的开发环境中练习。标注“示意 / 草案 / mock”的代码用于理解，需按步骤补全。'}
+                </p>
+              </section>
+              <section className="lesson-section">
+                <h2>动手练习</h2>
+                <ol className="exercise-list">
+                  {l.exercise.map((x) => (
+                    <li key={x}>{x}</li>
+                  ))}
+                </ol>
+              </section>
+            </>
           )}
-          <section className="lesson-section">
-            <div className="section-heading">
-              <h2>{l.lab ? `本课文件：${l.lab.file}` : '代码起点'}</h2>
-              <button
-                className="text-action"
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(l.code)
-                    toast.success('代码已复制')
-                  } catch {
-                    toast.error('复制失败，请手动选择代码复制')
-                  }
-                }}
-              >
-                <Copy size={15} />
-                复制代码
-              </button>
-            </div>
-            {l.lab ? (
-              <details>
-                <summary className="text-action">
-                  查看本课完整代码 <ChevronDown size={16} />
-                </summary>
-                <pre>
-                  <code>{l.code}</code>
-                </pre>
-              </details>
-            ) : (
-              <pre>
-                <code>{l.code}</code>
-              </pre>
-            )}
-            <p className="caption">
-              {l.lab
-                ? '当前文件代码完整，须与包内 lab_support.py 等文件一起使用。运行结果和验收需要你亲自确认。'
-                : '在自己的开发环境中练习。标注“示意 / 草案 / mock”的代码用于理解，需按步骤补全。'}
-            </p>
-          </section>
-          <section className="lesson-section">
-            <h2>动手练习</h2>
-            <ol className="exercise-list">
-              {l.exercise.map((x) => (
-                <li key={x}>{x}</li>
-              ))}
-            </ol>
-          </section>
           <section className="lesson-section">
             <h2>完成标准</h2>
             <p className="muted-text">
@@ -976,7 +983,7 @@ function LessonContent({ lesson: l }: { lesson: Lesson }) {
                 </a>
               )
             })}
-            <p className="caption">资料核验于 {c.reviewed}；外部内容可能继续更新。</p>
+            <p className="caption">各资料的核验日期见资源图书馆；外部内容可能继续更新。</p>
           </div>
           <div className="rail-tip">
             <Terminal size={20} />

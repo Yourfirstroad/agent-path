@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>JavaScript 任务清单</title>
+  <body>
+    <h1>JavaScript 任务清单</h1>
+    <pre id="output"></pre>
+    <script>
+      const tasks = [
+        { title: 'Python', done: true },
+        { title: 'JS', done: false },
+      ]
+      const pending = tasks.filter((task) => !task.done)
+      const titles = pending.map((task) => task.title)
+      function countDone(items) {
+        return items.filter((task) => task.done).length
+      }
+      document.querySelector('#output').textContent = JSON.stringify(
+        { titles, done: countDone(tasks) },
+        null,
+        2,
+      )
+    </script>
+  </body>
+</html>

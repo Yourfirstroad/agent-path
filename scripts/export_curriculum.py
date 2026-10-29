@@ -7,8 +7,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from backend.curriculum import CURRICULUM  # noqa: E402
 from package_agent_labs import package
+from package_guided_lessons import package_guides
 
 package()
+package_guides()
 
 target = ROOT / "public" / "curriculum.json"
 target.parent.mkdir(parents=True, exist_ok=True)

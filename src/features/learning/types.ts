@@ -12,6 +12,23 @@ export type Lesson = {
   code: string
   resources: string[]
   lab?: { download: string; file: string; command: string; prerequisites: string }
+  guide?: {
+    intro: string
+    before: string
+    folder: string
+    files: { name: string; code: string }[]
+    download: string
+    run: string
+    expected: string
+    explain: { anchor: string; text: string }[]
+    challenge: string
+    solution: string
+    pitfalls: string[]
+    prerequisites: string[]
+    scope: string
+    reviewed: string
+    sources?: { title: string; url: string }[]
+  }
   quiz: { question: string; options: string[]; answer: number; explanation: string }
 }
 export type Resource = {

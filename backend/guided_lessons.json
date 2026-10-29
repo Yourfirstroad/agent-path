@@ -1,0 +1,1906 @@
+{
+  "l01": {
+    "intro": "今天只做一件事：让电脑显示你的名字。网页是教材，编辑器负责保存代码，终端负责运行代码；这三个窗口作用不同。",
+    "before": "先打开 https://www.python.org/downloads/ 安装受支持的 Python 3（本教程以 3.12 验证，Windows 安装勾选 Add Python to PATH）。安装后重新打开终端。在桌面新建 learn-agent 文件夹，用编辑器新建 hello.py，复制下面代码并保存。也可以下载教程包直接打开 l01 文件夹。终端就是输入命令后按回车的窗口：在文件夹地址栏输入 powershell 回车即可打开。",
+    "folder": "guided-lessons/l01",
+    "files": [
+      "hello.py"
+    ],
+    "run": "python --version\npython hello.py\n",
+    "expected": "第一行版本为 Python 3.x；运行文件后显示：\n你好，学习者！\n今天开始构建我的第一个 Agent。",
+    "explain": [
+      {
+        "anchor": "name = \"学习者\"",
+        "text": "name 是给这段文字起的名字，等号把右边的文字存进去。引号必须成对，使用英文半角引号。"
+      },
+      {
+        "anchor": "print(f\"你好，{name}！\")",
+        "text": "print 把括号里的内容显示出来；f 让 {name} 被替换成变量中的文字。花括号不出现在最终结果中。"
+      },
+      {
+        "anchor": "保存 → 运行",
+        "text": "Ctrl+S 是保存；终端中的 python hello.py 才是运行。上次运行的输出不会随编辑自动改变。"
+      }
+    ],
+    "challenge": "把学习者改为小林，保存并再运行。随后只删掉一个引号，观察最后一行报错，再补回。",
+    "solution": "第一行改为 name = \"小林\"。应看到“你好，小林！”。缺引号时是 SyntaxError（语法错误），补齐两边引号后可重新运行。",
+    "pitfalls": [
+      "python 无法识别：关闭旧终端重开，试 py --version；若可用，把本课 python 换为 py。两者都不行则重新检查 Python 安装与 PATH。",
+      "提示 can't open file：输入 dir，应能看到 hello.py；若是 hello.py.txt，打开资源管理器的文件扩展名显示后修正。",
+      "先别跳到 Agent 或结构化输出。如果连“保存并运行”还不熟，就重复本课，不需要背术语。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [],
+    "reviewed": "2026-10-29"
+  },
+  "l02": {
+    "intro": "输入一个分钟数，让程序选轻量或标准任务，并让错误输入得到友好的回复。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l02",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "每次运行只问一次。输入 0 → 轻量任务；30 → 标准任务；abc → 请输入整数，例如 60；-1 → 分钟数不能为负数。",
+    "explain": [
+      {
+        "anchor": "raw = input(...)",
+        "text": "input 暂停等你打字并按回车。返回的是文字，所以 \"30\" 不能直接和数字 30 比大小。"
+      },
+      {
+        "anchor": "int(raw) 与 try/except",
+        "text": "int 尝试把文字变成整数。abc 转换不了会抛 ValueError，except 接住它并显示提示。"
+      },
+      {
+        "anchor": "if / elif / else",
+        "text": "从上到下只执行第一个满足条件的分支。四个空格代表语句属于哪个分支。"
+      }
+    ],
+    "challenge": "把分界线改成 45 分钟，分别输入 44 和 45。",
+    "solution": "把 elif minutes >= 30: 改为 elif minutes >= 45:。44 为轻量，45 为标准；不要把 >= 换成 >，否则边界错一格。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l01"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l03": {
+    "intro": "用三条任务练习“列表里装字典”，筛选未完成任务并统计数量。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l03",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "待学习： HTTP\n待学习： JavaScript\n完成： 1 总数： 3",
+    "explain": [
+      {
+        "anchor": "tasks = [...]",
+        "text": "方括号是一串有顺序的东西。每对花括号是一条任务，title 是标题，done 的 True/False 表示是否完成。"
+      },
+      {
+        "anchor": "for task in tasks",
+        "text": "循环每次拿出一条，暂时叫 task。task[\"done\"] 按字段名取状态，不是取第几个字。"
+      },
+      {
+        "anchor": "done_count += 1",
+        "text": "每遇到完成项加一。len 得到列表长度；空列表根本不进入循环，计数仍为零。"
+      }
+    ],
+    "challenge": "将 tasks 整段改为 []，再恢复三条任务并给 HTTP 加 minutes: 30 字段。",
+    "solution": "空列表写法是 tasks = []，结果“完成：0 总数：0”。HTTP 字典改为 {\"title\": \"HTTP\", \"done\": False, \"minutes\": 30}，现有循环仍能运行。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l02"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l04": {
+    "intro": "把完成比例写成函数：输入完成数和总数，返回比例。它既能被页面使用，也能被下一课的测试使用。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l04",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "2/5 → 40%\n0/0 → 0%\n3/3 → 100%\n数量不合法",
+    "explain": [
+      {
+        "anchor": "def completion(done, total)",
+        "text": "def 定义可反复使用的一组指令。done 和 total 是调用者交进来的参数；类型注解供人和工具阅读，不会自动验证输入。"
+      },
+      {
+        "anchor": "return",
+        "text": "return 把结果交回调用位置，print 只显示。这里约定总数零时返回 0，避免除以零。"
+      },
+      {
+        "anchor": "if __name__ == \"__main__\"",
+        "text": "直接运行文件才执行演示，别的文件 import 它时只获得函数，不自动打印；为测试留出接口。"
+      }
+    ],
+    "challenge": "在列表里加 (1, 4)，不修改函数。",
+    "solution": "列表改成 [(2, 5), (0, 0), (3, 3), (1, 4)]。新增一行 1/4 → 25%；函数逻辑不依赖固定任务列表。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l03"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l05": {
+    "intro": "保存一条中文任务，再读回来。第一次创建文件，后续只读取；损坏内容必须保留供你检查。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l05",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "第一次与第二次都显示 [{'title': '练习', 'done': False}]，同目录出现 tasks.json。将文件内容暂时改为 { 后，显示“读取失败，原文件未覆盖”，文件仍为 {。",
+    "explain": [
+      {
+        "anchor": "Path(__file__).with_name",
+        "text": "__file__ 是脚本自身位置；with_name 指向同文件夹的 tasks.json，不会因为终端位置不同写到别处。"
+      },
+      {
+        "anchor": "json.dumps / json.loads",
+        "text": "dumps 把 Python 数据变成 JSON 文字；loads 反向还原。JSON 使用双引号与小写 false，Python 使用 False。"
+      },
+      {
+        "anchor": "if not path.exists()",
+        "text": "只在文件不存在时初始化。解析失败只提示，绝不把原数据替换为空列表。"
+      }
+    ],
+    "challenge": "复制 tasks.json 为 tasks-backup.json 后，破坏原文件试一次，然后用备份恢复。",
+    "solution": "把原文件恢复为 [{\"title\":\"练习\",\"done\":false}]。重新运行应再次读到“练习”。不要用删除数据库来解决所有读写错误。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l03",
+      "l04"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l06": {
+    "intro": "在独立练习目录保存两次版本，看见具体改动。Git 是本地版本历史，运行本课不会发布到网上。",
+    "before": "先从 https://git-scm.com/downloads 安装 Git，重开 PowerShell 后输入 git --version。只在新解压的 l06 文件夹操作，下面代码文件中的 commands.ps1 是命令清单：逐行复制到终端，注释行可跳过。macOS / Linux 用编辑器手工创建相同 .gitignore、修改 hello.py，Git 命令相同。",
+    "folder": "guided-lessons/l06",
+    "files": [
+      "hello.py",
+      "commands.ps1"
+    ],
+    "run": "git --version\n# 在本课新解压的 l06 文件夹中，逐行执行 commands.ps1 的命令，不要在已有工作项目执行。\n",
+    "expected": "git diff 中 -print(\"版本一\") 为删去的旧行，+print(\"版本二\") 为新行。最后 log 有两次提交，编号每台电脑不同。",
+    "explain": [
+      {
+        "anchor": "git init / git config",
+        "text": "init 在当前目录创建版本库；不写 --global 的 config 只设置这个练习库的提交署名。示例邮箱是无效示例，不是你的登录凭据。"
+      },
+      {
+        "anchor": "git add / git commit",
+        "text": "add 选中要记录的文件，commit 真正保存一次快照。未 add 的改动不会进入这次提交。"
+      },
+      {
+        "anchor": "git diff / git log",
+        "text": "diff 看还没加入暂存区的变化，log 看已经保存的版本。没有 remote 和 push，所以没有上传。"
+      }
+    ],
+    "challenge": "把 hello.py 改为版本三，先 diff 再提交；临时创建 .env 文件，用 git status --short --ignored 检查。",
+    "solution": "git add hello.py 然后 git commit -m \"增加第三版\"；git log --oneline -3 应有三条。.env 应显示 !!（被忽略），不要把真实密码用于练习。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l01",
+      "l05"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l07": {
+    "intro": "为一个小项目创建独立依赖环境。uv.lock 是本次安装版本的清单，换电脑时按它重建。",
+    "before": "先按 https://docs.astral.sh/uv/getting-started/installation/ 安装 uv。新开终端验证 uv --version。进入 l07 目录，安装时需联网；这节不用手动创建 .venv，uv 会创建。",
+    "folder": "guided-lessons/l07",
+    "files": [
+      "main.py"
+    ],
+    "run": "uv --version\nuv init --bare\nuv add httpx==0.28.1\nuv run python main.py\nuv sync --locked\nuv run python main.py\n",
+    "expected": "两次都显示 httpx 已安装：0.28.1 和“没有发出网络请求”。文件夹新增 pyproject.toml、uv.lock、.venv。",
+    "explain": [
+      {
+        "anchor": "uv init --bare",
+        "text": "在当前课的空项目骨架中生成项目配置；--bare 不创建额外示例文件。请只执行一次，已存在配置时直接下一步。"
+      },
+      {
+        "anchor": "uv add",
+        "text": "下载依赖并写入配置与锁文件。依赖是别人发布的功能包；这里 httpx 负责发送网络请求。"
+      },
+      {
+        "anchor": "uv sync --locked",
+        "text": "严格按锁文件同步，配置与锁不匹配时失败，不会偷偷更新。换电脑应重新创建 .venv，不能复制旧环境。"
+      }
+    ],
+    "challenge": "打开 pyproject.toml 与 uv.lock 找到 httpx，再执行 uv run python -c \"import sys; print(sys.executable)\"。",
+    "solution": "输出路径应在本课 .venv 中。Git 只加入 pyproject.toml、uv.lock、main.py，.gitignore 写 .venv/；不要把环境上传。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l06"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "uv 项目与锁文件",
+        "url": "https://docs.astral.sh/uv/guides/projects/"
+      }
+    ]
+  },
+  "l08": {
+    "intro": "用三条自动检查保护第 4 课的函数。测试失败是有用的反馈，不能为了变绿删掉断言。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l08",
+    "files": [
+      "main.py",
+      "test_main.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m pytest -q\n",
+    "expected": "显示 3 passed。故意把函数中的 done / total 改为 1 后，test_normal 失败；恢复后再次 3 passed。",
+    "explain": [
+      {
+        "anchor": "from main import completion",
+        "text": "测试文件导入真正的被测函数。不能在测试里再写一遍计算逻辑代替实际函数。"
+      },
+      {
+        "anchor": "assert",
+        "text": "断言左右应相等。不相等时 pytest 报告文件、行号以及实际值与预期值。"
+      },
+      {
+        "anchor": "pytest.raises",
+        "text": "这段代码必须抛出指定异常才通过；测试的是非法输入被拒绝，而不是所有调用都成功。"
+      }
+    ],
+    "challenge": "增加全部完成场景。",
+    "solution": "在 test_main.py 加：\ndef test_all_done():\n    assert completion(3, 3) == 1\n重新运行应是 4 passed。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l04",
+      "l07"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l09": {
+    "intro": "用 SQLite 保存两条任务，只完成第一条，再重新连接确认记录存在。SQLite 是一个本地数据库文件，不需安装服务器。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l09",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "全部： [(1, 'SQL', 1), (2, 'HTTP', 0)]\n待学习： [('HTTP',)]\n重复运行不增加重复记录。",
+    "explain": [
+      {
+        "anchor": "CREATE TABLE",
+        "text": "表像一张有列名的表格。id 是唯一编号，title 是文本，done 用 0/1 表示状态。"
+      },
+      {
+        "anchor": "问号占位",
+        "text": "SQL 与值分开放，数据库会把参数当数据。不要用字符串拼接把用户输入塞进 SQL。"
+      },
+      {
+        "anchor": "UPDATE ... WHERE id",
+        "text": "WHERE 限定只改编号 1。with 正常结束时提交；第二个连接读取到提交后的持久记录。 closing 负责关闭连接，内部的 db 上下文负责提交或回滚，这两个动作不同。"
+      }
+    ],
+    "challenge": "把更新条件的 id 改为 2，再运行并查看待学习列表。",
+    "solution": "最后参数由 (1, 1) 改为 (1, 2)。两条 done 都为 1，待学习列表为空；第一条是上次已经保存的状态。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l05"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l10": {
+    "intro": "完成第一个作品：在终端添加、查看、完成任务。完整代码已提供，先走通一遍，再阅读函数，不需要凭空从头写。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l10",
+    "files": [
+      "tasks.py",
+      "test_tasks.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe tasks.py add \"学习 HTTP\"\n.venv/Scripts/python.exe tasks.py list\n.venv/Scripts/python.exe tasks.py done 1\n.venv/Scripts/python.exe tasks.py list\n.venv/Scripts/python.exe -m unittest -v\n",
+    "expected": "新目录中依次显示“已添加 #1”、[(1, '学习 HTTP', 0)]、“已完成 #1”、done 变为 1；测试显示 3 tests、OK。重复 add 会新增任务，这是正常行为。",
+    "explain": [
+      {
+        "anchor": "argparse",
+        "text": "把终端中的 add/list/done 变成 args.command。引号让含空格的标题作为一个参数传入。"
+      },
+      {
+        "anchor": "execute",
+        "text": "统一处理三个命令，所有 SQL 使用参数。list 重新连接读取，因此每次退出程序后数据依然在。"
+      },
+      {
+        "anchor": "test_tasks.py",
+        "text": "临时目录为每个测试准备新数据库，不接触你练习的 tasks.db。测试覆盖持久化、完成以及不存在/空输入。"
+      }
+    ],
+    "challenge": "运行 done 999 和 add \" \"，确认失败后原任务仍在。",
+    "solution": "分别执行 .venv/Scripts/python.exe tasks.py done 999 与 .venv/Scripts/python.exe tasks.py add \" \"，应报任务不存在/标题不能为空，list 不增加空任务。损坏数据库请先复制备份，不要覆盖原文件。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l05",
+      "l08",
+      "l09"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l11": {
+    "intro": "先亲眼看一问一答：浏览器向你电脑上的小服务请求 /health，服务返回 JSON。无需先完成下一课。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l11",
+    "files": [
+      "server.py",
+      "client.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe server.py\n# 保留上面窗口，在同一文件夹打开第二个终端\n.venv/Scripts/python.exe client.py\n",
+    "expected": "/health 200 application/json {'ok': True}\n/missing 404 application/json {'error': 'not_found'}\n停止服务后再运行 client.py 显示连接失败。",
+    "explain": [
+      {
+        "anchor": "server.py / do_GET",
+        "text": "这个函数处理 GET 请求，/health 是路径；127.0.0.1 指当前电脑，8011 是本实验端口。"
+      },
+      {
+        "anchor": "response.status_code",
+        "text": "200 是服务处理成功，404 是已经连上服务但找不到路径。连接失败时连 HTTP 响应都没有。"
+      },
+      {
+        "anchor": "response.json()",
+        "text": "HTTP 响应体是文字，json() 把 JSON 解析为字典。浏览器 F12 → 网络也能看请求与响应。 本地请求设置 trust_env=False，避免电脑上的代理环境变量把请求转到其他服务。"
+      }
+    ],
+    "challenge": "在浏览器打开 /missing，再停止服务刷新 /health，描述两个错误的不同。",
+    "solution": "/missing 显示 {\"error\":\"not_found\"} 且网络面板 404；停止服务后浏览器拒绝连接。前者改路径，后者先启动服务。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l04",
+      "l07"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l12": {
+    "intro": "把标题和分钟数交给 Python 校验。FastAPI 自动给你一个可以点按钮试接口的 /docs 页面；本课只校验和返回，还没有保存数据库。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l12",
+    "files": [
+      "app.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8012\n",
+    "expected": "浏览器打开 http://127.0.0.1:8012/docs。展开 POST /tasks → Try it out，填 {\"title\":\"Python\",\"minutes\":30} → Execute，得到 200 和相同数据。minutes:-1、空标题、仅空格标题应为 422。",
+    "explain": [
+      {
+        "anchor": "app = FastAPI()",
+        "text": "创建服务对象；uvicorn app:app 的前一个 app 是 app.py 文件名，后一个是对象变量名。"
+      },
+      {
+        "anchor": "class Task(BaseModel)",
+        "text": "把输入的字段和规则写成一张表：title 是文字，minutes 是 1 到 180 的整数。Field 描述约束，validator 拦住纯空格。"
+      },
+      {
+        "anchor": "@app.post / create_task",
+        "text": "装饰器把一个 URL 与函数连接。校验失败时函数根本不会执行；返回校验后的对象会转成 JSON。"
+      }
+    ],
+    "challenge": "将最大时长改为 90，保存后停止并重启服务，提交 91。",
+    "solution": "minutes 的 Field 改为 le=90。重启后 POST 91 得到 422，90 得到 200。运行命令没有 --reload，改代码不会自动重启。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l11"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "FastAPI 请求体",
+        "url": "https://fastapi.tiangolo.com/tutorial/body/"
+      }
+    ]
+  },
+  "l13": {
+    "intro": "用本地可控的慢任务学习超时与有限重试，不靠真实网络碰运气。只对“超时”重试，参数错误直接结束。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l13",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "先显示成功，随后第 1、2、3 次超时，最后“已停止，请稍后重试”。程序会自己结束。",
+    "explain": [
+      {
+        "anchor": "async def / await",
+        "text": "async 定义可以等待的函数，await 等结果时把执行机会交给事件循环。这不等于自动加速所有代码。"
+      },
+      {
+        "anchor": "asyncio.wait_for",
+        "text": "最多等 0.05 秒；超出时取消等待的任务并抛出 TimeoutError。本课 sleep 可取消，真实远端写操作未必能撤销。"
+      },
+      {
+        "anchor": "range(1, attempts + 1)",
+        "text": "显式限定重试次数，失败时稍等再试。扣费、下单等写操作要先设计请求 ID 去重，不能直接套重试。"
+      }
+    ],
+    "challenge": "把第二次调用改为最多两次尝试。",
+    "solution": "改为 await fetch_with_retry(0.2, attempts=2)，应只出现第 1、2 次超时。实际 HTTP 可用 httpx.AsyncClient(timeout=...)，超时类别需捕获 httpx.TimeoutException。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l11",
+      "l12"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l14": {
+    "intro": "第一次在浏览器运行 JavaScript。不用安装 Node，双击 HTML 文件就能看到任务筛选结果。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l14",
+    "files": [
+      "index.html"
+    ],
+    "run": "# 不用终端。完整解压后，双击 index.html，用浏览器打开。\n",
+    "expected": "页面显示 titles 为 [\"JS\"]，done 为 1。",
+    "explain": [
+      {
+        "anchor": "const tasks",
+        "text": "const 让变量不能被重新赋给另一个数组，但数组里的对象仍可能被修改。JS 对象类似 Python 字典，布尔值写 true/false。"
+      },
+      {
+        "anchor": "filter 与 map",
+        "text": "filter 按条件保留元素，map 把每个元素变成新值。task => ... 是箭头函数，类似一个很短的处理函数。"
+      },
+      {
+        "anchor": "textContent",
+        "text": "把结果作为文字写进页面。JSON.stringify 方便把对象显示出来，不会执行字符串里的 HTML。"
+      }
+    ],
+    "challenge": "增加未完成的 HTTP 任务，再把 tasks 改为空数组。",
+    "solution": "数组里追加 {title:\"HTTP\",done:false}，titles 变成 [\"JS\",\"HTTP\"]；改成 [] 后 titles 是 []、done 是 0。保存后刷新浏览器。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l03"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l15": {
+    "intro": "让网页读取真实的本地 Python 接口。页面与接口由同一个服务提供，这次不用先学习跨域配置。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l15",
+    "files": [
+      "app.py",
+      "index.html",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8015\n",
+    "expected": "打开 http://127.0.0.1:8015，点“读取任务”，显示“读取成功”和学习 fetch。停止后端，再点按钮，应显示“读取失败，请检查服务是否启动”。",
+    "explain": [
+      {
+        "anchor": "fetch(\"/api/tasks\")",
+        "text": "斜线开头表示当前网站的路径。所以本课要通过 8015 打开，不能双击 HTML，否则没有这个接口。"
+      },
+      {
+        "anchor": "response.ok",
+        "text": "HTTP 404/500 不一定让 fetch 抛异常；先检查 ok，再解析 JSON。"
+      },
+      {
+        "anchor": "try / catch",
+        "text": "成功、空数组和失败分别显示不同文字。只读任务不会保存修改；页面里没有模型密钥。"
+      }
+    ],
+    "challenge": "将后端返回列表改为 []，重启服务后再次点按钮。",
+    "solution": "把 tasks 函数改为 return []，应显示“暂时没有任务”，不是失败。恢复原列表后重启，数据重新显示。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l12",
+      "l14"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l16": {
+    "intro": "做一个能点“完成”的 React 页面。两个组件共用同一份任务，点击后列表和计数会一起更新。",
+    "before": "先完成 JavaScript 两课。从 https://nodejs.org/en/download 安装受支持的 Node.js（需要 >=22.12），重开终端。下载解压后进入 l16，保留全部文件；不要把 JSX 粘贴进 Python。第一次 npm install 联网安装，安装后用 npm run dev 启动。",
+    "folder": "guided-lessons/l16",
+    "files": [
+      "src.jsx",
+      "package.json",
+      "index.html",
+      "vite.config.js",
+      "package-lock.json"
+    ],
+    "run": "node --version\nnpm ci\nnpm run dev\n",
+    "expected": "Node 需 >=22.12。打开终端显示的 http://127.0.0.1:5176，初始 0 / 2；点 Python 的完成后 1 / 2，另一个按钮仍可用。清空后 0 / 0 和“还没有任务”。刷新恢复初始数据，本课尚未持久化。",
+    "explain": [
+      {
+        "anchor": "useState",
+        "text": "React 把 tasks 当作当前界面状态；setTasks 通知它用新数据重新画页面。"
+      },
+      {
+        "anchor": "map 与 {...t,done:true}",
+        "text": "创建新数组，并只复制改动的任务对象。不直接写 tasks[0].done=true，避免界面与数据不同步。"
+      },
+      {
+        "anchor": "Summary tasks={tasks}",
+        "text": "父组件把同一状态交给子组件显示统计。key 用稳定 id，而不是会变化的标题或位置。"
+      }
+    ],
+    "challenge": "增加 id:3、title:\"HTTP\"、done:false 的任务，再完成它。",
+    "solution": "在 useState 初始数组追加 {id:3,title:\"HTTP\",done:false}，刷新后显示 0 / 3；点 HTTP 后 1 / 3。改代码时 Vite 会自动刷新。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l14",
+      "l15"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "React 数组状态更新",
+        "url": "https://react.dev/learn/updating-arrays-in-state"
+      }
+    ]
+  },
+  "l17": {
+    "intro": "先用明确标记的离线适配器练习请求、配置与失败日志。真实模型调用单独显式开启，绝不把预设回答当作 AI 的能力。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l17",
+    "files": [
+      "main.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py --fail\n",
+    "expected": "第一次 mode=offline、usage=null，文本以“离线预设”开头；--fail 显示 TimeoutError；两次都有耗时，数值随机器变化。未加 --live 不发请求、不收费。",
+    "explain": [
+      {
+        "anchor": "ask / live",
+        "text": "函数把界面与模型服务隔开：默认返回预设数据。真正请求需 --live 并配置环境变量，模型名称不在代码中猜测。"
+      },
+      {
+        "anchor": "messages / max_tokens",
+        "text": "messages 是对话列表；role=user 是用户问题。max_tokens 限制本次输出长度，但不是账户总预算。"
+      },
+      {
+        "anchor": "try / 日志",
+        "text": "日志记录模式、耗时和错误类型，不打印密钥。离线 usage=null 表示没有真实 token 统计，不是零成本实测报告。"
+      }
+    ],
+    "challenge": "先跑 --fail，然后在不加 --live 的情况下改变问题文字，观察回答是否变化。",
+    "solution": "离线答复仍相同，因为是固定返回；不要把它用于模型效果比较。需要真实调用时，先读 https://api-docs.deepseek.com/zh-cn/，自行设置 MODEL_API_KEY 和 MODEL_NAME，并加 --live；先在服务后台设置预算。这条收费路径未由本次测试调用。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "默认离线免费；--live 是用户自行选择的真实网络调用，可能收费。没有在前端或源码存储密钥。",
+    "prerequisites": [
+      "l13"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l18": {
+    "intro": "把一句有固定格式的任务文字变成三个字段，再拦住不明确或不合法的结果。先跑通“提取 → 校验”这两步，再理解 AI 为什么也需要校验。",
+    "before": "前置：列表/字典、函数、try/except 和安装依赖。如果 class、str | None 不熟，先看下方逐段解释，不必先背完整面向对象语法。完整解压后进入 l18，新建 main.py（包里已有完整版本）。终端执行下列三行：第 1 行建环境，第 2 行安装 Pydantic，第 3 行运行代码。",
+    "folder": "guided-lessons/l18",
+    "files": [
+      "main.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe main.py\n",
+    "expected": "前两条成功：\n{\"title\":\"学习 Python\",\"due_date\":\"2026-11-01\",\"confidence\":0.0}\n{\"title\":\"复习函数\",\"due_date\":null,\"confidence\":0.0}\n后面的“明天”、两个日期、2 月 30 日都提示“需要修改”。最后显示“校验拦截：confidence 不能大于 1”。",
+    "explain": [
+      {
+        "anchor": "先认识这三个英文名字",
+        "text": "title = 任务标题；due_date = 截止日期；confidence = 分数。None 在 Python 中表示没有值，显示为 JSON 时写作 null。本例 confidence 固定 0.0，明确表示没有经过校准的信心估计，不代表正确概率。"
+      },
+      {
+        "anchor": "class ExtractedTask(BaseModel)",
+        "text": "class 可以先理解为自定义一种“表格”。BaseModel 提供填表检查功能，Field(ge=0, le=1) 规定下界 0、上界 1。str 是文字，str | None 表示文字或空值。"
+      },
+      {
+        "anchor": "extract(text)：先拆输入",
+        "text": "split(\"；\") 按中文分号拆成最多两段，再去掉“任务：”“日期：”前缀。这里只支持写明的固定格式，任意自然语言必须交给真实模型或另写规则，不能把这段代码叫智能理解。"
+      },
+      {
+        "anchor": "model_validate：再检查结果",
+        "text": "模型或规则给出的结果都要经过这一关。它检查字段和类型；额外 validator 检查标题非空、日期真实存在。校验失败会抛异常，try/except 负责显示可修改的提示。"
+      },
+      {
+        "anchor": "提示词在真实 AI 中放在哪里",
+        "text": "接真实模型时，可要求“提取 title、due_date、confidence；缺日期返回 null；不猜日期；只输出 JSON”。用模型输出替换 draft 后仍调用 model_validate。提示词不是验证器，模型自报分数也不是事实保证；先完成本课，再做 lc04 的框架结构化输出。"
+      }
+    ],
+    "challenge": "在 samples 加一条没有日期的“任务：阅读 HTTP”，再把最后测试的 confidence 改为 -0.2。先预测，再运行。",
+    "solution": "缺日期会返回 {\"title\":\"阅读 HTTP\",\"due_date\":null,\"confidence\":0.0}。-0.2 仍被 ValidationError 拦截；把异常提示改成“confidence 必须在 0 到 1”，就同时适合上下界。不要自行补上今天或明天。",
+    "pitfalls": [
+      "No module named pydantic：用同一个 .venv/Scripts/python.exe 执行 pip install 和 main.py，不能一个用系统 Python、另一个用环境 Python。",
+      "提示没有 model_validate：你装的是 Pydantic 1 或用了别的环境。按 requirements.txt 安装本课 2.14.1；不要把代码改成旧教程的 parse_obj。",
+      "明天被拒绝是本课的预期规则，完整自然语言日期解析需要时区与基准日期，本课明确不猜。",
+      "本例只支持中文冒号和分号。先原样复制输入跑通；更换标点前先修改解析规则并补测试。"
+    ],
+    "scope": "完整可运行的规则提取与 Pydantic 校验示例；不调用模型，不声称已实现任意自然语言理解。",
+    "prerequisites": [
+      "l02",
+      "l03",
+      "l04",
+      "l07",
+      "l17"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "Pydantic 字段与验证",
+        "url": "https://docs.pydantic.dev/latest/concepts/models/"
+      }
+    ]
+  },
+  "l19": {
+    "intro": "让文字一点点出现，并能停止。用真实本地 HTTP 流传输预设文字，观察网络分块与“完整消息”不是同一回事。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l19",
+    "files": [
+      "app.py",
+      "index.html",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8019\n",
+    "expected": "打开 http://127.0.0.1:8019，开始后逐段出现“这是本地预设文字流。”并显示已完成。中途停止显示已取消；勾选模拟中断只显示“这是本地”，并提示内容未完成。",
+    "explain": [
+      {
+        "anchor": "StreamingResponse",
+        "text": "后端每 0.4 秒送出一条 JSON 行，最后单独送 done:true 作为完成信号，不靠连接结束猜成功。"
+      },
+      {
+        "anchor": "TextDecoder / buffer",
+        "text": "网络可能把一个字或一条 JSON 拆开。decoder 保留字节状态，buffer 保留未凑齐换行的一段，凑齐再 JSON.parse。"
+      },
+      {
+        "anchor": "AbortController",
+        "text": "停止按钮取消本次浏览器请求，保留已收到的文字。真实模型远端是否停止和停止计费，要看提供商支持，不由前端按钮保证。"
+      }
+    ],
+    "challenge": "将服务端 fail 的 index 从 2 改为 1，重启后再次模拟中断。",
+    "solution": "勾选后只收到“这是”，没有 done:true，仍应显示内容未完成。若页面显示完成，就说明错误地把连接结束当成任务完成。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "文字内容是预设，HTTP 流和取消实际运行；不是模型流式质量或远端计费验证。",
+    "prerequisites": [
+      "l13",
+      "l15"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l21": {
+    "intro": "把“模型想调用工具”与“程序真的执行”分开。先用手写调用对象演示允许名单与参数检查，不需要模型密钥。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l21",
+    "files": [
+      "main.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe main.py\n",
+    "expected": "依次为 {'ok': True, 'data': ['Python 函数']}、unknown_tool、invalid_input。未知工具不会被执行。",
+    "explain": [
+      {
+        "anchor": "SearchInput",
+        "text": "工具参数也是外部输入，需要自己的结构检查。min_length 和 max_length 限定查询长度，strict=True 不把数字悄悄变成文字。"
+      },
+      {
+        "anchor": "dispatch / name",
+        "text": "dispatch 是调度入口，只认识 search_notes。不要把工具名拼成 eval、exec 或 shell 命令。"
+      },
+      {
+        "anchor": "统一返回格式",
+        "text": "ok 是成功标志，data 是结果，error 是可供上层判断的错误码。没找到资料可返回空列表，不等于工具崩溃。"
+      }
+    ],
+    "challenge": "增加查询 Rust 和空格的调用，猜测各自输出。",
+    "solution": "Rust 返回 ok=True,data=[]；全空格返回 invalid_input。只把列表中的 call 改为 {\"name\":\"search_notes\",\"arguments\":{\"query\":\"Rust\"}} 即可测试。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l18"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l22": {
+    "intro": "亲眼看到 Agent 的骨架：提议 → 校验执行工具 → 记录结果 → 再决定下一步。默认提议由固定脚本提供，方便看清循环。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l22",
+    "files": [
+      "main.py",
+      "tools.py",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe main.py\n",
+    "expected": "第一轮调用 Python、HTTP 两次工具，再输出“最终：Python 函数；HTTP 请求”。第二轮连续三次工具后显示“达到最大步数，停止”。",
+    "explain": [
+      {
+        "anchor": "messages",
+        "text": "每次把工具结果加入记录。真实模型下一次请求必须看到这些结果，才能在新信息上继续判断。"
+      },
+      {
+        "anchor": "for step in range(limit)",
+        "text": "循环最多 limit 次；即使提议永远是调用工具，也有结束边界。"
+      },
+      {
+        "anchor": "return / 循环之后",
+        "text": "正常最终回答时提前 return；循环耗尽后返回 limit。不能把达到上限伪装为任务完成。"
+      }
+    ],
+    "challenge": "把 run(always_tool=True) 改为 limit=2，记录工具实际调用数。",
+    "solution": "写成 run(always_tool=True, limit=2)，第二轮恰好两条工具步骤并以 limit 结束。本课的最终回答由工具结果拼接，仍不是模型生成。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l21"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l23": {
+    "intro": "把提取、校验、确认、保存串成固定工作流。只有提取可能需要模型，其余步骤用确定代码更容易检查。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l23",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "先显示 preview，后显示 saved 并生成 confirmed.json。第三条输入提示“请人工修改”，不覆盖已保存的有效任务。",
+    "explain": [
+      {
+        "anchor": "extract",
+        "text": "只接受本课定义的固定输入。以后可换真实模型，但函数输出仍需满足同一约定。"
+      },
+      {
+        "anchor": "confirmed",
+        "text": "预览与保存是两次明确动作。演示调用里的 True 是测试数据，不等于网页用户已经确认。"
+      },
+      {
+        "anchor": "失败回退",
+        "text": "解析失败直接交人工修改。不会为了显示成功而拼一个看似合理的标题写入文件。"
+      }
+    ],
+    "challenge": "将第二次调用的 confirmed=True 改为 False，使用新文件名 preview-only.json 测试。",
+    "solution": "调用 workflow(\"任务：学习流程\", confirmed=False, path=Path(\"preview-only.json\")) 后不应出现该文件。旧 confirmed.json 不会自动删除。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l05",
+      "l18",
+      "l22"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l24": {
+    "intro": "用真实 MCP SDK 启动一个只读工具，再用客户端发现并调用它。客户端会自动启动服务子进程，不需要你开两个终端。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l24",
+    "files": [
+      "server.py",
+      "client.py",
+      "public_notes/python.txt",
+      "requirements.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe client.py\n",
+    "expected": "工具列表包含 read_note；python.txt 返回笔记且错误标志为 False；../private.txt 和 81 字符名称返回工具错误。内容对象的排版可能随 SDK 变化。",
+    "explain": [
+      {
+        "anchor": "MCPServer / @server.tool",
+        "text": "把普通 Python 函数登记为可发现的工具。MCP 约定消息格式，权限仍由函数本身校验。此处使用官方 SDK 2.3.0 的 MCPServer，未复制旧版 FastMCP 导入。"
+      },
+      {
+        "anchor": "Client(StdioServerParameters)",
+        "text": "客户端通过标准输入输出与独立服务进程交换协议消息。此 client.py 充当简单 Host 的连接部分，没有模型或聊天 UI。"
+      },
+      {
+        "anchor": "resolve / is_relative_to",
+        "text": "先解析真实路径再检查是否位于允许目录内，阻止 ../ 跳出目录。示例目录必须由你控制，不允许攻击者并发改符号链接；这不是多租户沙箱。"
+      }
+    ],
+    "challenge": "在 public_notes 新建 http.txt 写“HTTP 是请求与响应的约定”，将客户端第一项改成 http.txt。",
+    "solution": "客户端输入列表第一项改为 \"http.txt\"，重新运行应读取新内容。不要在 server.py 的 stdout 打调试日志，它用于协议；调试信息应写 stderr。",
+    "pitfalls": [
+      "No module named mcp：安装本课 requirements.txt 并用本课 .venv 启动 client.py。",
+      "如果报 FastMCP 导入错误，检查是否复制了其他旧版教程。本课官方 SDK 2.x 使用 from mcp.server.mcpserver import MCPServer。",
+      "直接运行 server.py 看起来不动，是它在等协议消息。正常跟做只运行 client.py，由它启动并关闭服务。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l13",
+      "l21"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "MCP 官方 SDK 2.3.0 迁移说明",
+        "url": "https://github.com/modelcontextprotocol/python-sdk/blob/v2.3.0/docs/migration.md"
+      },
+      {
+        "title": "MCP Client 传输",
+        "url": "https://github.com/modelcontextprotocol/python-sdk/blob/v2.3.0/docs/client/transports.md"
+      }
+    ]
+  },
+  "l25": {
+    "intro": "同一个请求重试两次，只保存一条；同一个编号携带不同内容时拒绝。先理解这层保护，再学习 LangGraph 的审批暂停。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l25",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "依次 approval_required、count:1、count:1、request_id_conflict、timeout、not_found。重新运行计数仍为 1。",
+    "explain": [
+      {
+        "anchor": "confirmed",
+        "text": "先确认具体 payload，再允许写。真实产品要把审批人与动作内容绑定；本课布尔参数只是演示调用边界。"
+      },
+      {
+        "anchor": "PRIMARY KEY / INSERT OR IGNORE",
+        "text": "数据库唯一键让相同请求编号只占一行；重试不会创建第二条。随后核对内容，避免编号相同但动作已变。"
+      },
+      {
+        "anchor": "error",
+        "text": "超时、找不到、参数错误是不同原因。调用者按错误类型选择稍后重试、改输入或停止，而不是一律重试。"
+      }
+    ],
+    "challenge": "将请求编号改为 demo-2 并使用新标题，连跑两次；再试空标题。",
+    "solution": "同一 demo-2 两次 count 均为 1；空标题返回 invalid_input。只改 payload 不换编号会冲突，这是防止偷换已确认动作的保护。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l09",
+      "l21",
+      "l23"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l26": {
+    "intro": "让回答带上能查到的原文。先用十条自编公开教学笔记练习检索与拒答，不下载私人资料。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l26",
+    "files": [
+      "main.py",
+      "docs.json"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "HTTP 返回 [http] 开头的原文与 sources；火星天气返回“资料不足，无法回答”，sources 是 []。这是摘录式回答，没有调用生成模型。",
+    "explain": [
+      {
+        "anchor": "docs.json",
+        "text": "每条笔记都有稳定 id、标题和原文。真正资料应另加原始网址、作者及使用许可；本包十条是自编教学文字。"
+      },
+      {
+        "anchor": "retrieve",
+        "text": "先去空格再做不区分大小写的关键词匹配。没有相同关键词就找不到，不具备语义理解。"
+      },
+      {
+        "anchor": "answer / sources",
+        "text": "回答和引用一起返回，id 可以回查原文。只有检索到了才摘录；没有资料就拒答。"
+      }
+    ],
+    "challenge": "依次测试十个标题作为查询，再测试未知问题。",
+    "solution": "查询 Python、HTTP、JSON、SQL、React、工具、RAG、MCP、LangGraph、测试，应各自包含同 id 的原文；火星天气应拒答。可在 main 的列表中替换这十个查询循环运行。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l03",
+      "l18"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l27": {
+    "intro": "把文本变成一排数字，再比较方向是否接近。先用看得见的三维词频特征学会计算，不把数学示例冒充语义模型。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l27",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "模型是教学词频-v1，维度 3。Python 对 Python 函数的相似度为 1.0；蟒蛇对三条都为 0.0，显示它不懂同义词和多义词。",
+    "explain": [
+      {
+        "anchor": "FEATURES / embed",
+        "text": "每一维分别数 Python、HTTP、数据库出现次数。查询和文档必须用完全相同的映射，否则数字不能直接比较。"
+      },
+      {
+        "anchor": "cosine",
+        "text": "余弦衡量向量方向。先算点积，再除以两条向量的长度；零向量返回零，不做除零运算。"
+      },
+      {
+        "anchor": "排序与限制",
+        "text": "相似度高不代表事实真实，分数并非概率。本课词频可完全解释；真实 embedding 需再选择模型、下载权重或调用服务并记录维度与成本。"
+      }
+    ],
+    "challenge": "给 FEATURES 加第四个词 SQL，重新对所有文档与查询生成向量；测试 cosine([1,0],[1])。",
+    "solution": "所有向量变成 4 维后正常运行；维度不同必须抛 ValueError。不要只更新查询向量而继续使用旧文档向量。后续 pgvector 只是存储/检索这些向量，不会帮你自动保证模型一致。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l26"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l28": {
+    "intro": "用二十个固定问题比较两种切分方式。每个问题标好正确来源，程序实际检索后计算命中比例。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l28",
+    "files": [
+      "main.py",
+      "rag.py",
+      "docs.json"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "输出 dev/holdout 两组的 whole 与 short Recall@3，生成 40 条明细的 report.json。whole 为 1.0；short 较低。保留集只是大小写变化，难度很低，不能当真实应用质量证明。",
+    "explain": [
+      {
+        "anchor": "cases / split",
+        "text": "开发集用于观察和调整；保留集只做最后检查。真实评测应由独立问题构成，不能像教学样本一样过度相似。"
+      },
+      {
+        "anchor": "两种切分",
+        "text": "whole 保留整条，short 仅保留前两字符。这个故意很差的策略帮助理解“切丢证据”会降召回。"
+      },
+      {
+        "anchor": "Recall@3",
+        "text": "每题只有一个正确来源，前三个命中包含它就为 1；平均得到本集合的召回率。报告同时保留问题、期望、实际来源以定位失败。"
+      }
+    ],
+    "challenge": "给保留集加一题 query=\"网络响应码\", expected=\"http\"，重新计算。",
+    "solution": "在 cases 构造后追加该字典，split 写 holdout。关键词检索很可能未命中，使 whole 保留集指标下降；这是同义表达漏召回，不能把它删掉来提高分数。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l26",
+      "l27"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l29": {
+    "intro": "把学习时长保存成可查看、修改、删除的长期偏好，同时拦住旧版本覆盖。这里练的是你自己的实验文件，不是网站账号。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l29",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py set 60\n.venv/Scripts/python.exe main.py set 30 --revision 1\n.venv/Scripts/python.exe main.py set 90 --revision 1\n.venv/Scripts/python.exe main.py delete --revision 2\n.venv/Scripts/python.exe main.py show\n",
+    "expected": "新目录中 revision 依次 1、2；第三次提示旧版本冲突；删除后 revision=3、daily_minutes=null，表示以后上下文不再使用这个偏好。时间为真实当前 UTC 时间。",
+    "explain": [
+      {
+        "anchor": "read / memory.json",
+        "text": "退出程序后偏好还在文件里，所以是长期数据。对话 messages 不应全部塞进这个文件当成永久记忆。"
+      },
+      {
+        "anchor": "expected_revision",
+        "text": "更新时带上刚读到的版本号。磁盘版本已变化就拒绝，避免旧输入盖掉用户最新改动。此文件实现仅适合单人串行实验。"
+      },
+      {
+        "anchor": "删除为 None",
+        "text": "保留版本号和来源，但清空具体偏好值，构造上下文时跳过 None。生产系统还需真正处理备份留存与删除政策。"
+      }
+    ],
+    "challenge": "删除后尝试用 revision=2 写 60，再用 revision=3 写。",
+    "solution": "旧版本拒绝；--revision 3 成功得到 revision=4。若重复跟做，请先 show 读取实际版本，不要删除文件来规避冲突。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l05",
+      "l25"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l32": {
+    "intro": "同时评测最终回答与执行轨迹：答对但越权调用工具，也算失败。提供二十个固定场景，输出真实逐题结果。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l32",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py --broken\n",
+    "expected": "正常：结果通过 20，轨迹通过 20；--broken：结果仍 20，轨迹 5。eval.json 是最后一次运行的明细。二十题包含重复用于教学，不代表二十种独立真实情境。",
+    "explain": [
+      {
+        "anchor": "cases",
+        "text": "固定题与期望答案独立于执行函数。真实项目应增加不同用户措辞、工具错误和恶意输入，扩大覆盖而不是复制重复题。"
+      },
+      {
+        "anchor": "answer_ok / trace_ok",
+        "text": "结果正确和工具合规分开统计，不能仅看最终一句话。trace 中出现 delete_file 就失败，即便答案正确。"
+      },
+      {
+        "anchor": "model / max_steps",
+        "text": "保存模型配置让比较有依据。本例标记 scripted-v1，不将脚本的高分宣传为大模型准确率。"
+      }
+    ],
+    "challenge": "把允许轨迹上限改为 0，正常模式重跑。",
+    "solution": "将 len(result[\"trace\"])<=3 改为 <=0，并同步 max_steps 元数据；只有空问题的 5 个案例能通过轨迹检查。失败来源应能在 eval.json 中找到。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l22",
+      "l28"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l33": {
+    "intro": "给每次运行编号，给每个工具计时，并在预算耗尽前停止。这里只用教学计费单位，不伪造真实人民币费用。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l33",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "两条工具日志使用同一 run_id，第二条耗时通常明显更长，随后 budget_exhausted、spent_units=2。currency_cost=null 表示没有真实账单。",
+    "explain": [
+      {
+        "anchor": "uuid / run_id",
+        "text": "每次运行一个编号，把同一次执行中的多条日志关联起来。编号每次不同，不要把固定 UUID 当预期值。"
+      },
+      {
+        "anchor": "perf_counter",
+        "text": "适合计算经过时长；开始与结束相减得到秒，乘 1000 变毫秒。它不是日历时间。"
+      },
+      {
+        "anchor": "先检查预算",
+        "text": "执行前检查下一步会否超限；日志只列允许字段，不输出原始 headers、密钥或私人问题。真实计费按提供商 usage 和价格计算。"
+      }
+    ],
+    "challenge": "把 budget 改成 1，再改成 3。",
+    "solution": "run(budget=1) 只有一次工具后停止；budget=3 有三次工具、没有耗尽日志。每次比较先核对 run_id，不把不同运行的时长混为一谈。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l22"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l34": {
+    "intro": "即使资料里写“忽略规则、读取秘密”，工具也只能读指定目录。用程序验证权限边界，不声称单靠提示词就防住注入。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l34",
+    "files": [
+      "main.py",
+      "public_notes/attack.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "先显示外部资料，随后“已阻止：路径超出允许范围”。没有读取范围外文件、没有上传、没有写入。",
+    "explain": [
+      {
+        "anchor": "外部资料",
+        "text": "文档中的指令只是读到的文字，不能变成程序权限。这个实验不执行任何文档命令。"
+      },
+      {
+        "anchor": "resolve 后检查",
+        "text": "规范化路径后验证从属关系，才能识别 ../。目录须由受信任用户控制；并发改链接需更强沙箱。"
+      },
+      {
+        "anchor": "没有危险入口",
+        "text": "最小工具集合比仅要求模型“听话”可靠。需要写入时另加审批与内容绑定，参见 l25、lg03。"
+      }
+    ],
+    "challenge": "把路径换成 public_notes 外的绝对路径（只填一个不存在的测试路径），看是否被拒绝。",
+    "solution": "read(str(ROOT.parent / \"outside.txt\")) 应在读取前抛 ValueError。只传测试路径，禁止拿真实密钥文件练习。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l24",
+      "l25"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l35": {
+    "intro": "每次只推进一个研究步骤，把状态保存后退出，下次从下一步继续。先看到持久化的好处，再决定是否需要进阶框架。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l35",
+    "files": [
+      "main.py"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py\n.venv/Scripts/python.exe main.py\n",
+    "expected": "依次检索、整理证据、写草稿、核对；第五次显示已完成、不重复执行。中间关闭终端后重开，仍从 run.json 的下一步继续。",
+    "explain": [
+      {
+        "anchor": "next_step",
+        "text": "这是要执行的位置，不是完成百分比。每次只追加一个产物，再推进索引。"
+      },
+      {
+        "anchor": "临时文件替换",
+        "text": "先完整写 .tmp，再替换正式文件，降低写到一半破坏 JSON 的风险。仍是单进程示例，不处理多进程竞争。"
+      },
+      {
+        "anchor": "框架取舍",
+        "text": "本例产物是预设文字，演示任务恢复。Deep Agents 的规划/文件系统/子任务可能适合复杂工作，但会增加模型调用、依赖和调试成本；先比较你的真实需求。"
+      }
+    ],
+    "challenge": "执行两步后打开 run.json，核对 artifacts 长度与 next_step；写下是否需要模型自主规划。",
+    "solution": "两步后 next_step=2、artifacts 两项。固定四步无需模型决定流程；开放研究主题可能需要规划，但应先用 lg04 的可测流程评估，再考虑引入 Deep Agents。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l05",
+      "lg02"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l39": {
+    "intro": "给四个作品写一份能被别人复现的说明。提供生成器和一份清晰标记的教学示例，空证据不会被自动填成“已验证”。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l39",
+    "files": [
+      "main.py",
+      "example.md"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "生成 portfolio-l10/l20/l30/l38.md 四份文件；再次执行只显示保留已有。打开 example.md 对照结构，填写自己的事实。",
+    "explain": [
+      {
+        "anchor": "exists 保护",
+        "text": "已经写过的作品说明不被重新生成覆盖。模板是起点，不是替你编造成果。"
+      },
+      {
+        "anchor": "证据与取舍",
+        "text": "证据回答“怎么知道能用”，取舍回答“为什么这样做”。用一条真实失败及修复比堆框架名更有说明力。"
+      },
+      {
+        "anchor": "岗位对照",
+        "text": "在资源库打开仍有效的岗位样本，对每项技能标已实做/练习中/未涉及；样本不是市场统计，更不是就业保证。"
+      }
+    ],
+    "challenge": "选 l10，按 example 的结构补齐一次真实演示，然后重新运行生成器确认内容不丢。",
+    "solution": "在 portfolio-l10.md 手工写日期、三条命令实际输出、一个失败输入与修复。运行后应提示“保留已有”，你写的文字仍在。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l10",
+      "l20",
+      "l30",
+      "l38"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l40": {
+    "intro": "建立一份真实的依赖清单与迁移记录。示例只采集本环境实际版本，官方新版本和兼容性由你阅读、试验后填写，绝不自动宣称最新版。",
+    "before": "先完成前面的基础课。下载并完整解压教程包，在本课文件夹打开终端；不要在学习网站的安装目录练习。",
+    "folder": "guided-lessons/l40",
+    "files": [
+      "main.py",
+      "review-template.md"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe main.py\n",
+    "expected": "生成 dependency-review.json，显示当前 Python 版本及已安装包。独立空环境里三个包可能都显示未安装，这是实际情况；online_checked=false，不表示已核对最新版本。",
+    "explain": [
+      {
+        "anchor": "metadata.version",
+        "text": "读取正在运行的 Python 环境已安装版本，不联网，也不升级任何东西。"
+      },
+      {
+        "anchor": "official_sources",
+        "text": "更新入口是官方文档/发布记录。查看变化是否影响自己用到的接口，再选择候选版本。"
+      },
+      {
+        "anchor": "隔离比较",
+        "text": "复制某课到新的实验目录，创建新 .venv 测试候选版本，保留原环境与相同测试。通过后再决定是否迁移。"
+      }
+    ],
+    "challenge": "选一条官方变更，按 review-template.md 写一次“可能影响/不影响”的分析；没跑迁移时保留未验证。",
+    "solution": "例如仅文档措辞变化可写“不涉及当前代码，暂不升级”；若 model_validate 行为改变，应在两套隔离环境跑 l18 相同输入，保存输出后再决定。不要为了让报告看起来完整编造版本或测试。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l07",
+      "l08",
+      "l37"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l20": {
+    "intro": "把前面的技能拼成一个完整小作品：输入任务 → 提取草稿 → 人工修改 → 确认入库 → 刷新后读取。提供全部 React、Python 与配置文件。",
+    "before": "先完成 l10、l12、l15、l16、l18。下载后保留本课全部文件，需要两个终端：一个跑 Python、一个跑 React。之前的 5176 / 8020 服务请先 Ctrl+C 停止，再启动本课；若端口占用，不要启动第二份。",
+    "folder": "guided-lessons/l20",
+    "files": [
+      "app.py",
+      "package.json",
+      "index.html",
+      "src.jsx",
+      "vite.config.js",
+      "requirements.txt",
+      "package-lock.json"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8020\n# 保留 Python 窗口，在同一文件夹新开第二个终端\nnpm ci\nnpm run dev\n",
+    "expected": "打开 http://127.0.0.1:5176。提取“任务：学习 Python”，将标题改成“学习 HTTP”后确认保存；刷新点“读取已保存任务”仍看到 HTTP。勾选模拟失败显示错误，输入不带“任务：”会提示格式问题。",
+    "explain": [
+      {
+        "anchor": "app.py / Input 与 Task",
+        "text": "Input 是提取请求，Task 是保存请求，两条接口各自校验。提取不写数据库，用户确认后才调用 /api/tasks。"
+      },
+      {
+        "anchor": "src.jsx / draft",
+        "text": "草稿与已保存列表分开。输入框的修改更新 draft，保存发送的是编辑后的值，不能重新发送原始模型结果。"
+      },
+      {
+        "anchor": "vite.config.js",
+        "text": "浏览器向 5176 发 /api 请求，Vite 转发到 Python 的 8020。开发时解决两个服务联通问题，生产部署需自己的反向代理。"
+      },
+      {
+        "anchor": "SQLite 与失败状态",
+        "text": "数据库保存在本课 data/tasks.db；服务重启可读回。失败时不会显示保存成功。默认规则适配器无真实模型调用，l17 教你模型适配入口。"
+      }
+    ],
+    "challenge": "先保存标题 A，再模拟失败，确认 A 没消失；把草稿改成全空格尝试保存。",
+    "solution": "读取列表仍有 A；空白标题由 Python 拒绝，页面提示输入校验失败。不要只在 React 禁用按钮而忘记服务端校验。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "完整本地教学应用，默认规则模拟；无生产登录和多人权限，不要把此 Python 服务直接开放公网。真实模型质量与计费没有由离线测试证明。",
+    "prerequisites": [
+      "l10",
+      "l12",
+      "l16",
+      "l18"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l30": {
+    "intro": "给检索程序装一个真正的 React 页面。点引用能看到原文，未知问题明确拒答，并保留可重跑的评测结果。",
+    "before": "先完成 l26–l28 与 React 基础。停止之前使用 5176/8020 的课程服务，再进入 l30 按下面两个终端启动。第一次依赖安装需联网。",
+    "folder": "guided-lessons/l30",
+    "files": [
+      "app.py",
+      "package.json",
+      "index.html",
+      "src.jsx",
+      "vite.config.js",
+      "rag.py",
+      "evaluate.py",
+      "docs.json",
+      "requirements.txt",
+      "package-lock.json"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8020\n# 保留 Python 窗口，在同一文件夹新开第二个终端\nnpm ci\nnpm run dev\n# 第三个终端（或停止服务后）\n.venv/Scripts/python.exe evaluate.py\n",
+    "expected": "查询 HTTP 后得到带 [http] 的回答；点击“http · HTTP”展开原文。查询火星天气显示资料不足。evaluate.py 生成 report.json，包含实际检索来源与分数。",
+    "explain": [
+      {
+        "anchor": "rag.py / docs.json",
+        "text": "复用 l26 的检索逻辑，数据仍为十条自编教学笔记。它是关键词摘录，不是向量数据库，也不是生成式回答。"
+      },
+      {
+        "anchor": "app.py / Query",
+        "text": "服务端约束输入长度，避免只靠前端检查。API 返回答案与完整来源片段，引用不是随意拼一个链接。"
+      },
+      {
+        "anchor": "details / summary",
+        "text": "浏览器自带可键盘操作的展开组件。引用标题和实际片段一起返回，用户可以自己检查回答是否有依据。"
+      },
+      {
+        "anchor": "evaluate.py",
+        "text": "复用 l28 的开发/保留集与报告。真实资料要扩大评测范围；pgvector 是后续可选存储升级，不是跑通本课的必要条件。"
+      }
+    ],
+    "challenge": "将 docs.json 中 HTTP 的原文末尾加“本条已修订”，重启 Python 服务后查询。",
+    "solution": "答案与展开引用都应出现“本条已修订”；如果只有页面静态文案变化，说明没有真正读到后端数据。重新跑 evaluate.py，来源 id 不变。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本课在你的电脑运行，不会修改学习网站的进度。",
+    "prerequisites": [
+      "l16",
+      "l26",
+      "l28"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l38": {
+    "intro": "最后一个完整作品：React 展示来源与审批，Python 用真实 LangGraph 暂停、保存检查点并恢复；重复批准只写一次。",
+    "before": "先完成 lc01–lc04、l31、lg01–lg04 与 l20。保留本课全部文件，在独立 .venv 安装依赖。停止其他占用 5176/8020 的实验，再开两个终端。不要把学习网站数据库拷进这里。",
+    "folder": "guided-lessons/l38",
+    "files": [
+      "app.py",
+      "package.json",
+      "index.html",
+      "src.jsx",
+      "vite.config.js",
+      "research.py",
+      "test_research.py",
+      "requirements.txt",
+      "package-lock.json"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements.txt\n.venv/Scripts/python.exe -m uvicorn app:app --host 127.0.0.1 --port 8020\n# 保留 Python 窗口，在同一文件夹新开第二个终端\nnpm ci\nnpm run dev\n# 测试使用临时目录\n.venv/Scripts/python.exe -m unittest -v\n",
+    "expected": "开始 LangGraph 主题后显示等待确认、写入 0。批准后已保存、写入 1。保存任务编号，重启 Python 后读取仍存在。测试包含批准去重、拒绝、取消、预算与跨进程恢复，共 5 项。",
+    "explain": [
+      {
+        "anchor": "research.py / StateGraph",
+        "text": "节点处理研究、审批、提交，状态保存主题、预算、来源与轨迹。research 查询本地两个官方地址，计划是规则生成，非实时联网研究。"
+      },
+      {
+        "anchor": "interrupt / Command",
+        "text": "审批节点暂停，把草稿留给人。批准、拒绝、取消作为恢复值传回，只有 approved 分支进入 commit。"
+      },
+      {
+        "anchor": "两个 SQLite 文件",
+        "text": "checkpoints.db 保存流程状态，actions.db 用任务 ID 唯一约束保护副作用。流程检查点不能代替保存操作自己的去重。"
+      },
+      {
+        "anchor": "app.py / lock",
+        "text": "在这个单进程本地服务中串行处理请求，防止同时恢复一个任务。多进程、多用户生产部署需要更完整的权限与并发设计。"
+      },
+      {
+        "anchor": "五种演示",
+        "text": "正常批准、拒绝、取消、预算为 0、重启后批准。cancel 在等待审批时结束，不会撤销已保存内容；没有真实账单，预算只是演示单位。"
+      }
+    ],
+    "challenge": "做五种演示，分别保留任务编号；在 /docs 重复批准同一任务，检查 writes。",
+    "solution": "重复批准返回相同已完成状态、writes=1；拒绝/取消为 0；预算 0 在检索前停止。将 topic 改成未知主题应 no_evidence。运行 unittest 的结果才是本机代码证据，不能写成真实 AI 质量报告。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "完整本地教学应用；真实框架/数据库/审批执行，研究答案为离线规则；无登录隔离，不是可直接公开的多人服务。",
+    "prerequisites": [
+      "l20",
+      "lg04",
+      "l32",
+      "l33"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l36": {
+    "intro": "把 l20 的 Python 服务装进容器，数据放进命名卷。删除容器后重建，任务仍应存在。只练本机容器，不部署公网。",
+    "before": "先完成 l20。按 https://docs.docker.com/get-started/ 安装并启动 Docker Desktop，docker version 必须同时显示 Client 与 Server。若已有同名练习容器，先确认是本课的容器再停止。第一次拉取镜像与装依赖需联网，企业使用核对许可。",
+    "folder": "guided-lessons/l36",
+    "files": [
+      "app.py",
+      "Dockerfile",
+      ".dockerignore",
+      "requirements.txt"
+    ],
+    "run": "docker version\ndocker build -t agent-path-lab36 .\ndocker run -d --name agent-path-lab36 -p 127.0.0.1:8036:8020 -v agent-path-lab36-data:/data agent-path-lab36\n# 浏览器打开 http://127.0.0.1:8036/docs，POST /api/tasks 保存一条任务\ndocker stop agent-path-lab36\ndocker rm agent-path-lab36\ndocker run -d --name agent-path-lab36 -p 127.0.0.1:8036:8020 -v agent-path-lab36-data:/data agent-path-lab36\n# 在 /docs 中 GET /api/tasks，应仍能看到保存的任务\n",
+    "expected": "健康接口 /api/health 返回 {\"ok\":true}；重建同名容器后 GET /api/tasks 仍有之前任务。清理本次练习容器用 docker stop / docker rm，不删除命名卷。",
+    "explain": [
+      {
+        "anchor": "Dockerfile",
+        "text": "镜像是安装好的运行环境模板；COPY 只复制必要源码和依赖。本例固定 Python 次版本，正式生产还应固定基础镜像 digest 并安排安全更新。"
+      },
+      {
+        "anchor": "-p 127.0.0.1:8036:8020",
+        "text": "把容器 8020 映射到当前电脑 8036，并限定本机访问。EXPOSE 只是说明，不等于真正开放端口。"
+      },
+      {
+        "anchor": "-v 命名卷:/data",
+        "text": "数据库位于卷中，不跟随容器删除。不要用删除卷的操作来“重启”服务，否则会丢数据。"
+      }
+    ],
+    "challenge": "用 /docs 添加标题“容器重建测试”，再重建一遍并查询。",
+    "solution": "POST /api/tasks 请求体 {\"title\":\"容器重建测试\"}；重建必须继续使用 agent-path-lab36-data 卷。若换了卷名会看不到旧数据，不代表数据库自动迁移。",
+    "pitfalls": [
+      "docker version 只有 Client、没有 Server：先启动 Docker Desktop，等待引擎就绪。",
+      "failed to fetch oauth token / timeout：镜像仓库不可达，先检查网络；不是 Python 代码错误，也不要因此删除卷。",
+      "容器名称已存在：用 docker ps -a 核对本课容器，确认后 stop/rm 本课容器再重建，不清理其他项目。"
+    ],
+    "scope": "完整 Dockerfile 与 API 已提供；API 已通过本机行为验证。本次 Docker Hub 镜像授权请求网络超时，未完成容器构建和卷持久化实测，不能算容器验收通过。请网络可用时按上方步骤亲自核对。",
+    "prerequisites": [
+      "l20"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l37": {
+    "intro": "将安装、测试、构建连成一次检查。提供可本地运行的检查脚本和 CI 配置，故意改坏函数就应停止在失败处。",
+    "before": "需要 Python 与 Node.js >=22.12。完整下载本课目录（含 package-lock.json 和隐藏的 .github 文件夹）。检查只在自己的课程副本运行，安装依赖需要联网；没有模型调用或自动发布步骤。",
+    "folder": "guided-lessons/l37",
+    "files": [
+      "src.jsx",
+      "main.py",
+      "test_main.py",
+      "check.py",
+      "package.json",
+      "index.html",
+      "vite.config.js",
+      ".github/workflows/check.yml",
+      "package-lock.json"
+    ],
+    "run": "python -m venv .venv\n# 包内已提供 package-lock.json，npm ci 按锁文件安装\n.venv/Scripts/python.exe check.py\n",
+    "expected": "Python 3 项测试通过，随后安装锁定前端依赖并生成 dist。最后提示“仍需浏览器验证主要用户流程”。改坏 completion 后脚本非零退出，不继续构建。",
+    "explain": [
+      {
+        "anchor": "subprocess.run(check=True)",
+        "text": "上一条命令失败会抛错并停止，不能失败后继续打印“全部成功”。"
+      },
+      {
+        "anchor": "npm ci / lock",
+        "text": "ci 使用已经提交的 package-lock.json；依赖清单不一致会失败。不能每次检查都重新随机解析依赖。"
+      },
+      {
+        "anchor": "workflow 文件",
+        "text": "只有把这一课作为仓库根目录并由你自己推送到 GitHub 后，.github/workflows/check.yml 才触发；下载课程不会自动上传或运行。免费额度及账号设置以 GitHub 为准。"
+      }
+    ],
+    "challenge": "将 completion 的计算改为 1，运行 check.py，随后恢复。",
+    "solution": "第一项测试应显示 1 != 0.4，脚本退出码非零；恢复后检查通过。浏览器再打开 npm run dev 对应地址，确认页面可显示。",
+    "pitfalls": [
+      "提示找不到文件：终端应位于上方列出的本课文件夹；输入 dir 确认文件存在。",
+      "改了代码却没变化：先 Ctrl+S 保存，再重新运行；.py 文件不能带隐藏的 .txt 后缀。"
+    ],
+    "scope": "本地 check.py、Python 测试与前端构建已实跑；GitHub Actions 模板按当前官方 v7 文档核对，未替你创建远端仓库或触发远端 CI。",
+    "prerequisites": [
+      "l08",
+      "l16",
+      "l36"
+    ],
+    "reviewed": "2026-10-29",
+    "sources": [
+      {
+        "title": "checkout 官方用法",
+        "url": "https://github.com/actions/checkout"
+      },
+      {
+        "title": "setup-python 官方用法",
+        "url": "https://github.com/actions/setup-python"
+      },
+      {
+        "title": "setup-node 官方用法",
+        "url": "https://github.com/actions/setup-node"
+      }
+    ]
+  },
+  "lc01": {
+    "intro": "先把提示词中的两个空格填上：学习主题与分钟数。观察真正送进模型的消息，再看固定教学回复。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "01_messages.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 01_messages.py",
+    "expected": "messages 内包含 Python 函数和 30；reply 是固定教学回复。改主题后消息会变，预设回复不一定变。",
+    "explain": [
+      {
+        "anchor": "ChatPromptTemplate.from_messages",
+        "text": "列表中 system 是助手约束，human 是用户输入模板。{topic} 和 {minutes} 是等你填写的变量。"
+      },
+      {
+        "anchor": "prompt.invoke",
+        "text": "用字典提供两个变量，得到 PromptValue；to_messages 转成模型能接收的消息对象。"
+      },
+      {
+        "anchor": "FakeListChatModel",
+        "text": "依次返回预设回复，用于检查调用接口，不代表真正理解问题。先区分“消息变了”和“模型能理解”。"
+      }
+    ],
+    "challenge": "将 topic 改为列表、minutes 改为 45。",
+    "solution": "run 中填模板的字典改成 topic=\"列表\"、minutes=45，输出 messages 应包含两个新值。回复仍固定是正常现象。",
+    "prerequisites": [
+      "l18",
+      "l25"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lc02": {
+    "intro": "把普通函数变成 LangChain 工具，让参数表同时服务于模型与程序检查。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "02_tools.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 02_tools.py",
+    "expected": "合法 60 分钟分成 15 / 30 / 15；错误输入展示校验失败；源码中的参数模型写明字段与限制。",
+    "explain": [
+      {
+        "anchor": "@tool",
+        "text": "给函数加名字、说明和输入结构，框架才知道如何把它提供给模型。函数说明不是权限授权。"
+      },
+      {
+        "anchor": "Pydantic 参数模型",
+        "text": "将时长规则写在输入模型中，非法参数在进入工具逻辑前被拒绝。"
+      },
+      {
+        "anchor": "invoke 与异常",
+        "text": "工具.invoke 接收一个字典，返回工具计算结果；try/except 展示失败分支，不能静默换成猜测值。"
+      }
+    ],
+    "challenge": "在合法输入中把 60 改为 80，重新运行。",
+    "solution": "三段预算应随输入变化并加总 80。再把分钟数改为 -1，应该校验失败，不产生负数计划。",
+    "prerequisites": [
+      "lc01"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lc03": {
+    "intro": "运行一次真正的 LangChain Agent 工具循环，并比较同一会话和新会话。模型是可见的教学替身，工具执行是真的。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "03_agent_memory.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 03_agent_memory.py",
+    "expected": "tool_messages=2；same_thread 包含 LangGraph 官方地址；other_thread 不知道之前主题。进程退出后内存会话消失。",
+    "explain": [
+      {
+        "anchor": "create_agent",
+        "text": "框架把模型、工具和消息循环组装起来；你仍需要选择工具范围与最大循环步数。"
+      },
+      {
+        "anchor": "InMemorySaver / thread_id",
+        "text": "同一 thread_id 读取同一份内存记录，不同编号隔离。InMemory 的意思是程序关掉就消失，磁盘恢复到 lg02 学。"
+      },
+      {
+        "anchor": "lab_support.py / ScriptedStudyModel",
+        "text": "公共模块给出工具提议与固定回答，帮助稳定复现实验。不是自主理解或真实长记忆效果测试。"
+      }
+    ],
+    "challenge": "把第二次提问的 thread_id 换成一个全新的值。",
+    "solution": "新 thread 没有前一轮主题，应返回不知道。保持同一编号才读得到旧消息；重新启动进程也不能恢复内存记录。",
+    "prerequisites": [
+      "lc02",
+      "l22"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lc04": {
+    "intro": "要求 Agent 交出有主题、步骤和来源的计划对象，而不是随意一段文字。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "04_structured_plan.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 04_structured_plan.py --topic LangGraph",
+    "expected": "输出包含 minutes=60、actions、sources；sources 为官方地址。不存在的主题应失败，不编造来源。",
+    "explain": [
+      {
+        "anchor": "StudyPlan",
+        "text": "在 lab_support.py 定义字段约束。它就是 l18 的结构检查扩大为“学习计划表”。"
+      },
+      {
+        "anchor": "ToolStrategy(StudyPlan)",
+        "text": "将结构要求交给框架处理，结果放在 structured_response；验证失败不能当成有效计划继续保存。"
+      },
+      {
+        "anchor": "来源检查",
+        "text": "结构合法不代表来源真实。示例再检查来源来自本地允许目录，实际研究仍需打开原文核对。"
+      }
+    ],
+    "challenge": "执行 python 04_structured_plan.py --topic 不存在的主题。",
+    "solution": "应该说明没有有效结构化计划并停止。不要为了避免报错在来源字段里随便填一个网址。",
+    "prerequisites": [
+      "l18",
+      "lc03"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "l31": {
+    "intro": "先不用模型，建立两步图：准备任务，再根据任务生成摘要。看懂状态、节点、边，再加复杂 Agent。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "05_graph_basics.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 05_graph_basics.py",
+    "expected": "prepare 产生 task，summarize 读取它；最终状态包含准备后的任务和摘要。",
+    "explain": [
+      {
+        "anchor": "TypedDict",
+        "text": "描述共享状态有哪些字段。它主要帮助阅读和类型检查，不自动验证所有外部输入。"
+      },
+      {
+        "anchor": "节点返回字典",
+        "text": "节点读取已有状态，只返回本次修改的字段。下一节点就能看到合并后的值。"
+      },
+      {
+        "anchor": "START / END / compile",
+        "text": "边规定执行顺序，从 START 进入第一个节点，最后到 END。compile 生成可执行图，invoke 提供初始状态并运行。"
+      }
+    ],
+    "challenge": "把最初的主题改成 HTTP，运行后查看摘要。",
+    "solution": "修改传给 graph.invoke 的 topic 值；准备任务与摘要应一起反映 HTTP。不要直接修改最终 print 来伪造变化。",
+    "prerequisites": [
+      "lc04"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lg01": {
+    "intro": "让图根据练习模式选择一条分支，一次只走一条。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "06_graph_routes.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 06_graph_routes.py --mode practice\n.venv/Scripts/python.exe 06_graph_routes.py --mode review",
+    "expected": "practice 走练习节点；review 走复习节点。另一分支不应同时执行。",
+    "explain": [
+      {
+        "anchor": "路由函数",
+        "text": "读取 state.mode 并返回路由名字，本身不执行节点。名字必须与映射表匹配。"
+      },
+      {
+        "anchor": "add_conditional_edges",
+        "text": "把路由结果映射到具体节点。确定规则用代码表达，不需要让模型猜。"
+      },
+      {
+        "anchor": "argparse choices",
+        "text": "命令行限制合法模式；输入拼错直接拒绝，避免图进入未定义路径。"
+      }
+    ],
+    "challenge": "运行 --mode unknown，观察在哪一层被拒绝。",
+    "solution": "argparse 会提示 invalid choice，并以非零状态退出；图尚未开始。增加模式时需同时改参数选项、节点和路由映射。",
+    "prerequisites": [
+      "l31"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lg02": {
+    "intro": "关闭程序后继续刚才的任务。用磁盘检查点和稳定编号找回暂停位置，重复恢复也不重复写。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "07_checkpoints.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 07_checkpoints.py start --thread guide-07\n.venv/Scripts/python.exe 07_checkpoints.py resume --thread guide-07\n.venv/Scripts/python.exe 07_checkpoints.py resume --thread guide-07",
+    "expected": "start：pending=[\"finish\"]、action_count=0；resume：done、计数1；再次 resume 仍为1。",
+    "explain": [
+      {
+        "anchor": "SqliteSaver",
+        "text": "把图的状态写到磁盘，与内存保存器区别是退出进程后仍可读取。"
+      },
+      {
+        "anchor": "thread / workdir",
+        "text": "thread 是记录编号，workdir 是数据库所在目录。恢复时两个都要一致，不是只保留文件名。"
+      },
+      {
+        "anchor": "interrupt_after / write_once",
+        "text": "静态断点在 plan 后暂停用于教学。finish 的写入另用唯一请求 ID 去重，检查点本身不会保证外部动作只发生一次。"
+      }
+    ],
+    "challenge": "用新编号 guide-07b 只执行 start，关终端后重新打开并 resume。",
+    "solution": "重新进入同一 agent-labs 文件夹，运行 python 07_checkpoints.py resume --thread guide-07b。显示 done 与计数1；已有编号不要重复 start。",
+    "prerequisites": [
+      "l31",
+      "l09"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lg03": {
+    "intro": "让图停下来等人的决定：批准保存，拒绝结束。重点是暂停时写入数必须为零。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "08_approval.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 08_approval.py start --thread guide-approve\n.venv/Scripts/python.exe 08_approval.py approve --thread guide-approve\n.venv/Scripts/python.exe 08_approval.py approve --thread guide-approve\n.venv/Scripts/python.exe 08_approval.py start --thread guide-reject\n.venv/Scripts/python.exe 08_approval.py reject --thread guide-reject",
+    "expected": "未批准：0 次；批准后：1 次；重复批准仍1；拒绝任务始终0。",
+    "explain": [
+      {
+        "anchor": "interrupt",
+        "text": "携带待确认内容暂停图。恢复时这个节点会重新进入，所以 interrupt 前面不做写入。"
+      },
+      {
+        "anchor": "Command(resume=True/False)",
+        "text": "把人的批准或拒绝送回原任务，而不是从头创建新任务。布尔值不同于文字 \"false\"。"
+      },
+      {
+        "anchor": "独立 commit 节点",
+        "text": "只有批准分支可达 commit。拒绝分支直接结束，并用幂等键保护重复批准。"
+      }
+    ],
+    "challenge": "用一个新编号先拒绝，再尝试批准。",
+    "solution": "任务已终止，不应再次写入，计数保持0。如需重新申请，创建新任务并重新确认具体内容。",
+    "prerequisites": [
+      "lg02",
+      "l25"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  },
+  "lg04": {
+    "intro": "把 LangChain Agent 嵌入 LangGraph 的研究节点，再接来源检查、人工审批与持久化。先逐个跑通前面八个实验再做本课。",
+    "before": "完整解压 agent-labs.zip，进入能看到 lab_support.py 的 agent-labs 文件夹。Python 建议 3.12。首次先创建独立 .venv 并安装锁定依赖，后续只执行本课运行命令。手机可读教材，实际运行请用电脑。",
+    "folder": "agent-labs",
+    "framework": true,
+    "files": [
+      "09_research_assistant.py",
+      "lab_support.py",
+      "requirements-lock.txt"
+    ],
+    "run": "python -m venv .venv\n.venv/Scripts/python.exe -m pip install -r requirements-lock.txt\n.venv/Scripts/python.exe 09_research_assistant.py start --thread guide-research --topic LangGraph --stream\n.venv/Scripts/python.exe 09_research_assistant.py show --thread guide-research\n.venv/Scripts/python.exe 09_research_assistant.py approve --thread guide-research\n.venv/Scripts/python.exe 09_research_assistant.py approve --thread guide-research",
+    "expected": "start 显示节点更新、waiting_approval、写入0；批准后 done、写入1；重复批准仍1。sources 可回到官方资料目录核对。",
+    "explain": [
+      {
+        "anchor": "research 节点",
+        "text": "创建 Agent，调用只读资料工具，取得通过 StudyPlan 校验的计划；任何来源越界都在审批前拒绝。"
+      },
+      {
+        "anchor": "stream_mode=\"updates\"",
+        "text": "展示节点完成后的状态增量，不是 token 逐字流。两者用途不同，避免把步骤日志当作模型思考。"
+      },
+      {
+        "anchor": "approval / commit",
+        "text": "批准节点只收决定，写入节点独立去重。状态与产物在 work/ 中，与你的学习网站数据完全分开。"
+      },
+      {
+        "anchor": "--live 边界",
+        "text": "默认 ScriptedStudyModel 免费且固定；真实提供商需另装适配器和配置模型密钥，可能收费，没有用离线测试替代真实质量验收。"
+      }
+    ],
+    "challenge": "使用新编号做 reject，再运行完整 test_labs。",
+    "solution": "python 09_research_assistant.py start --thread guide-reject2 --topic LangGraph，再 reject 同编号，应无写入；python -m unittest -v test_labs 验证九个实验的行为。",
+    "prerequisites": [
+      "lc04",
+      "lg03"
+    ],
+    "scope": "LangChain / LangGraph 实际执行，模型输出为离线教学替身；默认不需要密钥，不调用收费模型。",
+    "pitfalls": [
+      "找不到模块：确保完整解压，lab_support.py 与本课程序同目录，并使用该目录 .venv 的 Python。",
+      "thread 已存在：继续 resume/approve/reject，或换一个新编号；不要删除数据库。",
+      "无法恢复：核对 thread 与 workdir；InMemorySaver 不能跨进程恢复，SqliteSaver 才能。"
+    ],
+    "reviewed": "2026-10-29"
+  }
+}

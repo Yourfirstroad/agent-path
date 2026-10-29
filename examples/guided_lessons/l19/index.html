@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>逐字接收与取消</title>
+  <body>
+    <h1>逐字接收与取消</h1>
+    <button id="start">开始</button><button id="stop">停止</button
+    ><label><input id="fail" type="checkbox" />模拟中断</label>
+    <p id="status">待开始</p>
+    <pre id="output"></pre>
+    <script>
+      let controller
+      const out = document.querySelector('#output'),
+        status = document.querySelector('#status')
+      document.querySelector('#start').onclick = async () => {
+        controller?.abort()
+        const own = new AbortController()
+        controller = own
+        out.textContent = ''
+        status.textContent = '生成中（本地模拟）'
+        try {
+          const response = await fetch('/stream?fail=' + document.querySelector('#fail').checked, {
+            signal: own.signal,
+          })
+          if (!response.ok) throw new Error(`HTTP ${response.status}`)
+          const reader = response.body.getReader()
+          const decoder = new TextDecoder()
+          let buffer = '',
+            complete = false
+          while (true) {
+            const { value, done } = await reader.read()
+            if (own.signal.aborted) throw new DOMException('取消', 'AbortError')
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+            let end
+            while ((end = buffer.indexOf('\n')) >= 0) {
+              const line = buffer.slice(0, end)
+              buffer = buffer.slice(end + 1)
+              if (!line) continue
+              const event = JSON.parse(line)
+              if (event.text) out.textContent += event.text
+              if (event.done) complete = true
+            }
+          }
+          status.textContent = complete ? '已完成' : '连接中断，内容未完成'
+        } catch (error) {
+          if (controller === own)
+            status.textContent =
+              error.name === 'AbortError' ? '已取消，保留已接收内容' : '连接失败，内容未完成'
+        }
+      }
+      document.querySelector('#stop').onclick = () => controller?.abort()
+    </script>
+  </body>
+</html>

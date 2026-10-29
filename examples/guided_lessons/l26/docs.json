@@ -1,0 +1,52 @@
+[
+  {
+    "id": "python",
+    "title": "Python",
+    "text": "Python 函数把输入转换为输出。"
+  },
+  {
+    "id": "http",
+    "title": "HTTP",
+    "text": "HTTP 请求包含方法和路径，响应包含状态码。"
+  },
+  {
+    "id": "json",
+    "title": "JSON",
+    "text": "JSON 用文本表达对象、数组与基本值。"
+  },
+  {
+    "id": "sql",
+    "title": "SQL",
+    "text": "SQL 使用参数化查询将数据与指令分开。"
+  },
+  {
+    "id": "react",
+    "title": "React",
+    "text": "React 用状态驱动界面更新。"
+  },
+  {
+    "id": "tool",
+    "title": "工具",
+    "text": "工具由程序校验参数并执行。"
+  },
+  {
+    "id": "rag",
+    "title": "RAG",
+    "text": "RAG 先检索资料，再依据证据回答。"
+  },
+  {
+    "id": "mcp",
+    "title": "MCP",
+    "text": "MCP 规范工具与数据连接的协议。"
+  },
+  {
+    "id": "graph",
+    "title": "LangGraph",
+    "text": "LangGraph 用状态、节点和边编排流程。"
+  },
+  {
+    "id": "test",
+    "title": "测试",
+    "text": "测试检查实际结果是否符合预期。"
+  }
+]

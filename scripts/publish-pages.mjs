@@ -34,7 +34,11 @@ for (const entry of await readdir(dist, { withFileTypes: true })) {
   }
 }
 const downloads = await readdir(path.join(dist, 'downloads'))
-if (downloads.length !== 1 || downloads[0] !== 'agent-labs.zip')
+if (
+  downloads.length !== 2 ||
+  !downloads.includes('agent-labs.zip') ||
+  !downloads.includes('guided-lessons.zip')
+)
   throw new Error('下载目录仅允许经过核对的实战 ZIP。')
 const curriculum = JSON.parse(await readFile(path.join(dist, 'curriculum.json'), 'utf8'))
 if ('state' in curriculum || !Array.isArray(curriculum.lessons))
